@@ -24,7 +24,7 @@ export default function Footer() {
               <h3 className="font-bold text-lg mb-4 text-white">Navegación</h3>
               <ul className="space-y-2 text-sm text-white/80">
                 <li><Link href="/" className="hover:text-primary">Home</Link></li>
-                <li><Link href="/customize" className="hover:text-primary">Personalizador</Link></li>
+                <li><Link href="/crear" className="hover:text-primary">Personalizar</Link></li>
                 <li><Link href="/favorites" className="hover:text-primary">Favoritos</Link></li>
                 <li><Link href="/login" className="hover:text-primary">Login</Link></li>
               </ul>
