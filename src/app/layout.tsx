@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import CategorySidebar from '@/components/CategorySidebar';
+import CategorySidebarSuspense from '@/components/CategorySidebarSuspense';
 
 export const metadata: Metadata = {
   title: 'Arte Nativo Estampados',
@@ -28,7 +29,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <div className="flex min-h-screen bg-background">
-          <CategorySidebar />
+          <CategorySidebarSuspense/>
           <div className="flex flex-col w-full">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-8">

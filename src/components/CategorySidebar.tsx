@@ -1,15 +1,13 @@
-
 // src/components/CategorySidebar.tsx
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, HandMetal, MoreHorizontal, Wand2, LogIn, Heart } from "lucide-react";
+import { Layers, Shirt, Square, Box, HandMetal, MoreHorizontal, Wand2, LogIn, Heart, Brush } from "lucide-react";
 import { Logo } from "./Logo";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/mock-data";
 import { usePathname, useSearchParams } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: 'Todos', icon: Layers },
@@ -24,8 +22,8 @@ const categories: { name: Category; icon: React.ElementType }[] = [
 
 const mainNavLinks = [
     { href: "/", label: "Home" },
-    { href: "/customize", label: "Personalizador" }
-    
+    { href: "/crear", label: "Personalizar", icon: Brush },
+    { href: "/generate-description", label: "AI Tool", icon: Wand2 },
 ];
 
 export default function CategorySidebar() {

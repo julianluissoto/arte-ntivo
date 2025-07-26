@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Heart, LogIn, Menu as MenuIcon, Layers, Shirt, Square, Box, HandMetal, MoreHorizontal, Wand2 } from "lucide-react";
+import { Heart, LogIn, Menu as MenuIcon, Layers, Shirt, Square, Box, HandMetal, MoreHorizontal, Wand2, Brush } from "lucide-react";
 import { Logo } from "./Logo";
 import * as React from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
@@ -36,10 +36,21 @@ const NavLinks = ({ inSheet, onSelect }: { inSheet?: boolean; onSelect?: () => v
       </Wrapper>
       <Wrapper>
         <Button variant="ghost" asChild className={linkClasses}>
-          <Link href="/customize" onClick={onSelect}>Personalizador</Link>
+          <Link href="/crear" onClick={onSelect}>
+             <Brush className="mr-2 h-4 w-4" />
+             Personalizar
+          </Link>
         </Button>
       </Wrapper>
-      </>
+       <Wrapper>
+        <Button variant="ghost" asChild className={linkClasses}>
+          <Link href="/generate-description" onClick={onSelect}>
+            <Wand2 className="mr-2 h-4 w-4" />
+            AI Tool
+          </Link>
+        </Button>
+      </Wrapper>
+    </>
   );
 };
 
@@ -54,9 +65,7 @@ const CategoryLinks = ({ onSelect }: { onSelect?: () => void }) => {
             asChild
             className="w-full justify-start gap-3"
           >
-            {/* This is a temporary solution to navigate categories from the header. 
-                In a real app, this would update a global state. */}
-            <Link href="/">
+            <Link href={`/?category=${name}`}>
               <Icon className="h-5 w-5" />
               <span>{name}</span>
             </Link>
@@ -85,7 +94,6 @@ export default function Header() {
             </Link>
           </Button>
 
-          {/* Mobile Navigation */}
           <div className="md:hidden">
              <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
