@@ -34,7 +34,7 @@ export default function Footer() {
                 <Link href="#" aria-label="Facebook" className="text-white/80 hover:text-primary">
                   <Facebook className="h-6 w-6" />
                 </Link>
-                <Link href="#" aria-label="Instagram" className="text-white/80 hover:text-primary">
+                <Link href="https://www.instagram.com/artenativoremeras/?hl=es-la" aria-label="Instagram" className="text-white/80 hover:text-primary">
                   <Instagram className="h-6 w-6" />
                 </Link>
               </div>
