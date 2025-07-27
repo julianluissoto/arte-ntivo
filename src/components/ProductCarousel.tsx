@@ -17,7 +17,7 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
         slidesToShow: 3,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 3000,
+        autoplaySpeed: 1500,
         responsive: [
             {
                 breakpoint: 1024,

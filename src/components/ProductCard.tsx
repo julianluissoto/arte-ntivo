@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col group w-full">
         <CardHeader className="p-0 relative aspect-square">
             <Image
-            src={product.image}
+            src={product.images[0]}
             alt={product.title}
             fill
             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
