@@ -1,3 +1,5 @@
+
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
 import "slick-carousel/slick/slick.css"; 
@@ -8,7 +10,7 @@ import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import CategorySidebar from '@/components/CategorySidebar';
-import CategorySidebarSuspense from '@/components/CategorySidebarSuspense';
+import { AuthProvider } from '@/hooks/useAuth'; // Import AuthProvider
 
 export const metadata: Metadata = {
   title: 'Arte Nativo Estampados',
@@ -28,19 +30,21 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <div className="flex min-h-screen bg-background">
-          <CategorySidebarSuspense/>
-          <div className="flex flex-col w-full">
-            <Header />
-            <main className="flex-grow container mx-auto px-4 py-8">
-              {children}
-            </main>
-            <Footer />
+        <AuthProvider>
+          <div className="flex min-h-screen bg-background">
+            <CategorySidebar />
+            <div className="flex flex-col w-full">
+              <Header />
+              <main className="flex-grow container mx-auto px-4 py-8">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </div>
-        </div>
-        <WhatsAppButton />
-        <ScrollToTopButton />
-        <Toaster />
+          <WhatsAppButton />
+          <ScrollToTopButton />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

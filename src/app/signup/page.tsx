@@ -1,5 +1,5 @@
 
-// src/app/login/page.tsx
+// src/app/signup/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -9,11 +9,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Loader2 } from 'lucide-react';
+import { UserPlus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Separator } from '@/components/ui/separator';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -24,87 +23,81 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-
-export default function LoginPage() {
+export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Por favor, completa todos los campos.',
-      });
+  const handleSignUp = () => {
+    if (!email || !password || !confirmPassword) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Por favor, completa todos los campos.' });
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Las contraseñas no coinciden.' });
       return;
     }
     setIsLoading(true);
-    
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        toast({
-          title: '¡Bienvenido!',
-          description: 'Has iniciado sesión correctamente.',
-        });
-        router.push('/profile');
-    } catch(error: any) {
-        let description = 'Ocurrió un error al iniciar sesión.';
-        if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-            description = 'El correo electrónico o la contraseña son incorrectos.';
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        toast({ title: '¡Cuenta creada!', description: 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.' });
+        router.push('/login');
+      })
+      .catch((error) => {
+        let description = 'Ocurrió un error al crear la cuenta.';
+        if (error.code === 'auth/email-already-in-use') {
+          description = 'Este correo electrónico ya está en uso.';
+        } else if (error.code === 'auth/weak-password') {
+          description = 'La contraseña debe tener al menos 6 caracteres.';
+        } else if (error.code === 'auth/invalid-email') {
+          description = 'El correo electrónico no es válido.';
         }
-        toast({
-          variant: 'destructive',
-          title: 'Error de autenticación',
-          description,
-        });
-    } finally {
+        toast({ variant: 'destructive', title: 'Error de registro', description });
+      })
+      .finally(() => {
         setIsLoading(false);
-    }
+      });
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
-    try {
-        await signInWithPopup(auth, provider);
-        toast({
-          title: '¡Bienvenido!',
-          description: 'Has iniciado sesión con Google correctamente.',
-        });
-        router.push('/profile');
-    } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error de Google',
-          description: 'No se pudo iniciar sesión con Google. Intenta de nuevo.',
-        });
-    } finally {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        toast({ title: '¡Bienvenido!', description: 'Has iniciado sesión con Google correctamente.' });
+        router.push('/');
+      })
+      .catch((error) => {
+        toast({ variant: 'destructive', title: 'Error de Google', description: 'No se pudo iniciar sesión con Google. Intenta de nuevo.' });
+      })
+      .finally(() => {
         setIsLoading(false);
-    }
+      });
   };
 
   return (
     <div className="flex items-center justify-center py-12">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-2xl font-headline">Login</CardTitle>
+          <CardTitle className="text-2xl font-headline">Crear Cuenta</CardTitle>
           <CardDescription>
-            Accede a tu cuenta para ver tus favoritos.
+            Regístrate para guardar tus productos favoritos.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <GoogleIcon className="mr-2 h-5 w-5" />
               )}
-              Iniciar sesión con Google
+              Registrarse con Google
           </Button>
-          <div className="relative">
+           <div className="relative">
               <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
               </div>
@@ -125,7 +118,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Contraseña</Label>
             <Input 
               id="password" 
               type="password" 
@@ -135,20 +128,31 @@ export default function LoginPage() {
               disabled={isLoading}
             />
           </div>
+          <div className="grid gap-2">
+            <Label htmlFor="confirm-password">Confirmar Contraseña</Label>
+            <Input 
+              id="confirm-password" 
+              type="password" 
+              required 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button className="w-full" onClick={handleLogin} disabled={isLoading}>
+          <Button className="w-full" onClick={handleSignUp} disabled={isLoading}>
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <LogIn className="mr-2 h-4 w-4" />
+              <UserPlus className="mr-2 h-4 w-4" />
             )}
-            Sign in
+            Registrarse
           </Button>
           <p className="text-sm text-center text-muted-foreground">
-            ¿No tienes una cuenta?{' '}
-            <Link href="/signup" className="underline text-primary">
-              Regístrate
+            ¿Ya tienes una cuenta?{' '}
+            <Link href="/login" className="underline text-primary">
+              Inicia sesión
             </Link>
           </p>
         </CardFooter>

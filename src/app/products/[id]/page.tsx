@@ -75,7 +75,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
 
           <p className="text-muted-foreground">{product.description}</p>
-          <p className="text-4xl font-bold text-primary">{product.price}</p>
+          <p className="text-4xl font-bold"
+            style={{ color: product.disponible === false ? '#dc2626' : 'var(--tw-text-primary)' }}>
+            {product.disponible === false ? 'Sin Stock' : product.price}
+          </p>
+
 
           <div className="space-y-4">
             {/* Color */}
@@ -142,15 +146,23 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
           {/* Botones */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button size="lg" className="w-full">
+            <Button
+              size="lg"
+              className="w-full"
+              disabled={product.disponible === false}
+            >
               Agregar al Carrito
             </Button>
-            <Button size="lg" variant="outline" className="w-full" asChild>
-              <Link href="/crear">
-                <Brush className="mr-2 h-5 w-5" />
-                Personalizar
-              </Link>
-            </Button>
+
+            {product.disponible && (
+              <Button size="lg" variant="outline" className="w-full" asChild>
+                <Link href="/crear">
+                  <Brush className="mr-2 h-5 w-5" />
+                  Personalizar
+                </Link>
+              </Button>
+            )}
+
           </div>
         </div>
       </div>

@@ -10,12 +10,9 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <div className="flex items-center gap-2 mb-4">
-                  <LogoSvg className="h-10 w-auto text-primary" />
-                  <span className="text-2xl font-bold font-headline text-white">Arte Nativo</span>
+                  <LogoSvg className="h-10 w-auto text-primary mb-10" />
               </div>
-              <p className="text-sm text-white/80">
-                Crafting your ideas into reality.
-              </p>
+              
                <p className="text-sm mt-4 text-white/80">
                 &copy; {new Date().getFullYear()} Arte Nativo. All rights reserved.
               </p>

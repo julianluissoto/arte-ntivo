@@ -3,12 +3,17 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, HandMetal, MoreHorizontal, Wand2, LogIn, Heart, Brush } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/mock-data";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogoSvg } from "./LogoSvg";
-
+import { useAuth } from "@/hooks/useAuth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
     { name: 'Todos', icon: Layers },
@@ -17,15 +22,89 @@ const categories: { name: Category; icon: React.ElementType }[] = [
     { name: 'Plástico', icon: Box },
     { name: 'Acrílico', icon: Layers },
     { name: 'MDF', icon: Box },
-    { name: 'Metal', icon: HandMetal },
+    { name: 'Metal', icon: Wand2 },
+    { name: 'Goma', icon: Eraser },
     { name: 'Varios', icon: MoreHorizontal },
 ];
 
 const mainNavLinks = [
     { href: "/", label: "Home" },
     { href: "/crear", label: "Personalizar", icon: Brush },
-
 ];
+
+const UserAuthSection = () => {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            toast({
+                title: "¡Sesión cerrada!",
+                description: "Has cerrado sesión correctamente.",
+            });
+            router.push('/');
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'No se pudo cerrar sesión.',
+            });
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-6 w-3/4" />
+            </div>
+        );
+    }
+
+    return user ? (
+        <>
+            <div className="px-2 py-1 mb-2 text-center text-sm text-muted-foreground border-b pb-3">
+                <p className="font-semibold text-foreground">Hola,</p>
+                <p className="truncate">{user.displayName || user.email}</p>
+            </div>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/profile">
+                    <UserIcon className="h-5 w-5" />
+                    <span>Mi Perfil</span>
+                </Link>
+            </Button>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/favorites">
+                    <Heart className="h-5 w-5" />
+                    <span>Favoritos</span>
+                </Link>
+            </Button>
+            <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
+                <LogOut className="h-5 w-5" />
+                <span>Salir</span>
+            </Button>
+        </>
+    ) : (
+        <>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/login">
+                    <LogIn className="h-5 w-5" />
+                    <span>Ingresar</span>
+                </Link>
+            </Button>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/signup">
+                    <UserPlus className="h-5 w-5" />
+                    <span>Registrarme</span>
+                </Link>
+            </Button>
+        </>
+    );
+};
+
 
 export default function CategorySidebar() {
     const pathname = usePathname();
@@ -40,9 +119,7 @@ export default function CategorySidebar() {
                 </Link>
             </div>
 
-       
             <nav className="pt-1 px-4 pb-4 space-y-2">
-
                 <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
                 {mainNavLinks.map(link => (
                     <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} asChild className="w-full justify-start gap-3">
@@ -72,18 +149,7 @@ export default function CategorySidebar() {
             </div>
             <Separator />
             <div className="p-4 space-y-2">
-                <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                    <Link href="/favorites">
-                        <Heart className="h-5 w-5" />
-                        <span>Favoritos</span>
-                    </Link>
-                </Button>
-                <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                    <Link href="/login">
-                        <LogIn className="h-5 w-5" />
-                        <span>Login</span>
-                    </Link>
-                </Button>
+                <UserAuthSection />
             </div>
         </aside>
     );

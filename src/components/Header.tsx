@@ -1,3 +1,5 @@
+
+// src/components/Header.tsx
 "use client";
 
 import Link from "next/link";
@@ -5,15 +7,18 @@ import { Button } from "@/components/ui/button";
 import {
   Heart,
   LogIn,
+  LogOut,
   Menu as MenuIcon,
   Layers,
   Shirt,
   Square,
   Box,
-  HandMetal,
-  MoreHorizontal,
   Wand2,
+  MoreHorizontal,
   Brush,
+  Eraser,
+  UserPlus,
+  User as UserIcon,
 } from "lucide-react";
 
 import * as React from "react";
@@ -26,6 +31,12 @@ import {
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/mock-data";
 import { LogoSvg } from "./LogoSvg";
+import { useAuth } from "@/hooks/useAuth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "./ui/skeleton";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Todos", icon: Layers },
@@ -34,40 +45,33 @@ const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Plástico", icon: Box },
   { name: "Acrílico", icon: Layers },
   { name: "MDF", icon: Box },
-  { name: "Metal", icon: HandMetal },
+  { name: "Metal", icon: Wand2 },
+  { name: "Goma", icon: Eraser },
   { name: "Varios", icon: MoreHorizontal },
 ];
 
 const NavLinks = ({
-  inSheet,
   onSelect,
 }: {
-  inSheet?: boolean;
   onSelect?: () => void;
 }) => {
-  const commonClasses = "justify-start text-base font-medium";
-  const linkClasses = inSheet ? `${commonClasses} w-full` : commonClasses;
-
-  const Wrapper = inSheet ? SheetClose : React.Fragment;
-
   return (
     <>
-      <Wrapper>
-        <Button variant="ghost" asChild className={linkClasses}>
+      <SheetClose asChild>
+        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium">
           <Link href="/" onClick={onSelect}>
             Home
           </Link>
         </Button>
-      </Wrapper>
-      <Wrapper>
-        <Button variant="ghost" asChild className={linkClasses}>
+      </SheetClose>
+      <SheetClose asChild>
+        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium gap-3">
           <Link href="/crear" onClick={onSelect}>
-            <Brush className="mr-2 h-4 w-4" />
+            <Brush className="h-5 w-5" />
             Personalizar
           </Link>
         </Button>
-      </Wrapper>
-      
+      </SheetClose>
     </>
   );
 };
@@ -89,24 +93,99 @@ const CategoryLinks = ({ onSelect }: { onSelect?: () => void }) => {
   );
 };
 
+const AuthSectionMobile = () => {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        setIsOpen(false);
+        toast({
+            title: "¡Sesión cerrada!",
+            description: "Has cerrado sesión correctamente.",
+        });
+        router.push('/');
+    };
+
+    if (loading) {
+        return (
+            <div className="space-y-2 mt-auto p-4 border-t">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="mt-auto p-4 border-t space-y-2">
+            {user ? (
+                <>
+                    <SheetClose asChild>
+                        <Button variant="outline" asChild className="w-full justify-start gap-3">
+                            <Link href="/profile">
+                                <UserIcon className="h-5 w-5" />
+                                <span>Mi Perfil</span>
+                            </Link>
+                        </Button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                        <Button variant="outline" asChild className="w-full justify-start gap-3">
+                            <Link href="/favorites">
+                                <Heart className="h-5 w-5" />
+                                <span>Favoritos</span>
+                            </Link>
+                        </Button>
+                    </SheetClose>
+                    <Button variant="outline" onClick={handleLogout} className="w-full justify-start gap-3">
+                        <LogOut className="h-5 w-5" />
+                        <span>Logout</span>
+                    </Button>
+                </>
+            ) : (
+                <>
+                    <SheetClose asChild>
+                        <Button variant="outline" asChild className="w-full justify-start gap-3">
+                            <Link href="/login">
+                                <LogIn className="h-5 w-5" />
+                                <span>Login</span>
+                            </Link>
+                        </Button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                        <Button variant="outline" asChild className="w-full justify-start gap-3">
+                            <Link href="/signup">
+                                <UserPlus className="h-5 w-5" />
+                                <span>Sign Up</span>
+                            </Link>
+                        </Button>
+                    </SheetClose>
+                </>
+            )}
+        </div>
+    );
+};
+
+
 export default function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { user } = useAuth();
 
   return (
     <header className="bg-card shadow-sm sticky top-0 z-40 md:hidden">
       <div className="container mx-auto flex items-center justify-between p-4">
-      
         <Link href="/" className="flex items-center gap-2 text-primary">
-        <LogoSvg className="w-24 h-auto text-amber-900" />
-                
+          <LogoSvg className="w-24 h-auto" />
         </Link>
-
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/favorites" aria-label="Favorites">
-              <Heart className="h-5 w-5 text-primary" />
-            </Link>
-          </Button>
+          {user && (
+             <Button variant="ghost" size="icon" asChild>
+                <Link href="/profile" aria-label="Profile">
+                    <UserIcon className="h-5 w-5 text-primary" />
+                </Link>
+             </Button>
+          )}
 
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -117,25 +196,16 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72 p-0 flex flex-col">
               <div className="p-4 flex flex-col gap-2">
-                <NavLinks inSheet onSelect={() => setIsOpen(false)} />
+                <NavLinks onSelect={() => setIsOpen(false)} />
               </div>
               <Separator />
               <div className="p-4">
                 <h3 className="text-lg font-semibold">Categorías</h3>
               </div>
-              <div className="flex flex-col gap-2 pt-0 p-4 h-full overflow-y-auto">
+              <div className="flex flex-col gap-2 pt-0 p-4 flex-grow overflow-y-auto">
                 <CategoryLinks onSelect={() => setIsOpen(false)} />
               </div>
-              <div className="mt-auto p-4 border-t">
-                <SheetClose asChild>
-                  <Button variant="outline" asChild className="w-full justify-start gap-3">
-                    <Link href="/login">
-                      <LogIn className="h-5 w-5" />
-                      <span>Login</span>
-                    </Link>
-                  </Button>
-                </SheetClose>
-              </div>
+              <AuthSectionMobile />
             </SheetContent>
           </Sheet>
         </div>
