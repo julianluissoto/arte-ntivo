@@ -3,6 +3,7 @@ import { products } from "@/lib/mock-data";
 import ProductCard from "@/components/ProductCard";
 import type { Category } from "@/lib/mock-data";
 import ProductCarousel from "@/components/ProductCarousel";
+import SearchInput from "@/components/SearchInput";
 
 interface HomeProps {
   searchParams?: {
@@ -23,12 +24,13 @@ export default function Home({ searchParams }: HomeProps) {
   return (
     <div className="space-y-8">
       {selectedCategory === 'Todos' && (
-        <section className="mb-12">
-            <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
-                Productos Destacados
-            </h2>
-            <ProductCarousel products={featuredProducts} />
+        <section className="mb-12 text-center">
+          <h2 className="text-3xl font-bold font-headline text-primary mb-6">
+            Destacados
+          </h2>
+          <ProductCarousel products={featuredProducts} />
         </section>
+
       )}
 
       <section>

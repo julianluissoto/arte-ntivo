@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/mock-data";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -14,6 +14,7 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import SearchInput from "./SearchInput";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
     { name: 'Todos', icon: Layers },
@@ -57,9 +58,9 @@ const UserAuthSection = () => {
     if (loading) {
         return (
             <div className="space-y-2">
+                <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-6 w-3/4" />
             </div>
         );
     }
@@ -80,6 +81,13 @@ const UserAuthSection = () => {
                 <Link href="/favorites">
                     <Heart className="h-5 w-5" />
                     <span>Favoritos</span>
+                </Link>
+            </Button>
+             {/* Enlace al panel de administración */}
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/admin">
+                    <Shield className="h-5 w-5" />
+                    <span>Admin</span>
                 </Link>
             </Button>
             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
@@ -105,6 +113,36 @@ const UserAuthSection = () => {
     );
 };
 
+export const CategorySidebarSkeleton = () => {
+    return (
+        <aside className="hidden  md:flex flex-col w-64 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
+            <div className="flex justify-center mb-10">
+                <Skeleton className="h-12 w-32" />
+            </div>
+            <div className="space-y-2">
+                <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+            <Separator />
+            <div className="flex-grow space-y-2">
+                <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Categorías</h3>
+                {[...Array(9)].map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                ))}
+            </div>
+            <Separator />
+            <div className="space-y-2">
+                 <div className="space-y-2">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                </div>
+            </div>
+        </aside>
+    )
+}
+
 
 export default function CategorySidebar() {
     const pathname = usePathname();
@@ -117,6 +155,10 @@ export default function CategorySidebar() {
                 <Link href="/" className="inline-flex items-center">
                     <LogoSvg className="h-12 w-auto mb-10" />
                 </Link>
+            </div>
+            
+            <div className="px-4 pb-4">
+              <SearchInput />
             </div>
 
             <nav className="pt-1 px-4 pb-4 space-y-2">

@@ -1,4 +1,3 @@
-
 // src/components/Header.tsx
 "use client";
 
@@ -19,6 +18,7 @@ import {
   Eraser,
   UserPlus,
   User as UserIcon,
+  Shield,
 } from "lucide-react";
 
 import * as React from "react";
@@ -37,6 +37,7 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
+import SearchInput from "./SearchInput";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Todos", icon: Layers },
@@ -97,11 +98,9 @@ const AuthSectionMobile = () => {
     const { user, loading } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
-    const [isOpen, setIsOpen] = React.useState(false);
 
     const handleLogout = async () => {
         await signOut(auth);
-        setIsOpen(false);
         toast({
             title: "¡Sesión cerrada!",
             description: "Has cerrado sesión correctamente.",
@@ -111,7 +110,7 @@ const AuthSectionMobile = () => {
 
     if (loading) {
         return (
-            <div className="space-y-2 mt-auto p-4 border-t">
+            <div className="mt-auto p-4 border-t space-y-2">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
             </div>
@@ -135,6 +134,14 @@ const AuthSectionMobile = () => {
                             <Link href="/favorites">
                                 <Heart className="h-5 w-5" />
                                 <span>Favoritos</span>
+                            </Link>
+                        </Button>
+                    </SheetClose>
+                     <SheetClose asChild>
+                        <Button variant="outline" asChild className="w-full justify-start gap-3">
+                            <Link href="/admin">
+                                <Shield className="h-5 w-5" />
+                                <span>Admin</span>
                             </Link>
                         </Button>
                     </SheetClose>
@@ -170,7 +177,6 @@ const AuthSectionMobile = () => {
 
 export default function Header() {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { user } = useAuth();
 
   return (
     <header className="bg-card shadow-sm sticky top-0 z-40 md:hidden">
@@ -178,37 +184,30 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-2 text-primary">
           <LogoSvg className="w-24 h-auto" />
         </Link>
-        <div className="flex items-center gap-2">
-          {user && (
-             <Button variant="ghost" size="icon" asChild>
-                <Link href="/profile" aria-label="Profile">
-                    <UserIcon className="h-5 w-5 text-primary" />
-                </Link>
-             </Button>
-          )}
-
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MenuIcon className="h-6 w-6" />
-                <span className="sr-only">Abrir menú</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72 p-0 flex flex-col">
-              <div className="p-4 flex flex-col gap-2">
-                <NavLinks onSelect={() => setIsOpen(false)} />
-              </div>
-              <Separator />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">Categorías</h3>
-              </div>
-              <div className="flex flex-col gap-2 pt-0 p-4 flex-grow overflow-y-auto">
-                <CategoryLinks onSelect={() => setIsOpen(false)} />
-              </div>
-              <AuthSectionMobile />
-            </SheetContent>
-          </Sheet>
-        </div>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MenuIcon className="h-6 w-6" />
+              <span className="sr-only">Abrir menú</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-72 p-0 flex flex-col">
+            <div className="p-4 border-b">
+                <SearchInput />
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+              <NavLinks onSelect={() => setIsOpen(false)} />
+            </div>
+            <Separator />
+            <div className="p-4">
+              <h3 className="text-lg font-semibold">Categorías</h3>
+            </div>
+            <div className="flex flex-col gap-2 pt-0 p-4 flex-grow overflow-y-auto">
+              <CategoryLinks onSelect={() => setIsOpen(false)} />
+            </div>
+            <AuthSectionMobile />
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );
