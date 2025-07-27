@@ -211,7 +211,7 @@ export default function CustomizePage() {
             >
               {selectedProduct ? (
                 <Image
-                  src={selectedProduct.image}
+                  src={selectedProduct.images[0]}
                   alt={selectedProduct.title}
                   fill
                   style={{ objectFit: "contain" }}

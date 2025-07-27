@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Logo } from './Logo';
 import { Facebook, Instagram } from 'lucide-react';
+import { LogoSvg } from './LogoSvg';
+
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <div className="flex items-center gap-2 mb-4">
-                  <Logo className="h-10 w-auto text-primary" />
+                  <LogoSvg className="h-10 w-auto text-primary" />
                   <span className="text-2xl font-bold font-headline text-white">Arte Nativo</span>
               </div>
               <p className="text-sm text-white/80">
