@@ -1,234 +1,267 @@
+
+// src/app/admin/page.tsx
 "use client";
 
-import { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { products } from "@/lib/mock-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { UploadCloud, Loader2, PlusCircle, Trash2 } from 'lucide-react';
+import type { Category } from '@/lib/types';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
-const CATEGORIES = ["Indumentaria", "Accesorios", "Calzado", "Cerámica", "Plástico", "Acrílico", "MDF", "Metal", "Goma", "Varios"];
-const COLORS = [
-  { name: "Amarillo", value: "#fde047" },
-  { name: "Negro", value: "#000000" },
-  { name: "Rojo", value: "#dc2626" },
-  { name: "Blanco", value: "#ffffff" }
-];
-const SIZES = ["XS", "S", "M", "L", "XL"];
-
-// Aquí toda tu lista de productos para subir:
-const productosParaSubir = [
-  {
-    id: 1,
-    title: "Mochila Lisa",
-    price: "$13000",
-    images: ["https://http2.mlstatic.com/D_844317-MLA81922995879_012025-O.jpg"],
-    hint: "black backpack",
-    category: "Indumentaria",
-    description: "Una mochila resistente y espaciosa, ideal para el día a día. Fabricada con materiales de alta calidad para mayor durabilidad.",
-    isFeatured: true,
-    options: {
-      colors: ["#fde047", "#3b82f6", "#ef4444", "#22c55e"],
-    },
-    disponible: true,
-  },
-  {
-    id: 2,
-    title: "Taza plástica",
-    price: "$3800",
-    images: ["https://res.cloudinary.com/julian-soto/image/upload/v1753635033/arte-nativo-web/unnamed_wdytdj.png"],
-    hint: "taza polimero",
-    category: "Plástico",
-    description: "Taza plastic sublimada, ideal para personalizar con tus fotos, logos o diseños favoritos. Ideal para el jardín de infantes.",
-    disponible: true,
-  },
-  // ... Agregá aquí el resto de tus productos completos como los pasaste.
+const categories: Category[] = [
+    "Indumentaria",
+    "Cerámica",
+    "Plástico",
+    "Acrílico",
+    "MDF",
+    "Metal",
+    "Varios",
+    "Papel",
+    "Goma",
 ];
 
-export default function ProductForm() {
-  const [form, setForm] = useState({
-    title: "",
-    price: "",
-    stock: "",
-    category: "",
-    colors: [] as string[],
-    sizes: [] as string[],
-    image: "",
-  });
+export default function AdminPage() {
+    const [productName, setProductName] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState('');
+    const [category, setCategory] = useState<Category | ''>('');
+    const [imageUrls, setImageUrls] = useState(['']); // State for multiple image URLs
+    const [hint, setHint] = useState('');
+    const [isAvailable, setIsAvailable] = useState(true);
+    const [isFeatured, setIsFeatured] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+    const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+    const handleImageChange = (index: number, value: string) => {
+        const newImageUrls = [...imageUrls];
+        newImageUrls[index] = value;
+        setImageUrls(newImageUrls);
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const product = {
-        ...form,
-        price: parseFloat(form.price),
-        stock: parseInt(form.stock),
-      };
-      await addDoc(collection(db, "products"), product);
-      alert("Producto creado correctamente");
-      setForm({
-        title: "",
-        price: "",
-        stock: "",
-        category: "",
-        colors: [],
-        sizes: [],
-        image: "",
-      });
-    } catch (error) {
-      console.error("Error al crear el producto:", error);
-      alert("Hubo un error al guardar el producto");
-    }
-  };
+    const addImageField = () => {
+        setImageUrls([...imageUrls, '']);
+    };
 
-  // Nueva función para subir todos los productos del arreglo
-  const subirTodosProductos = async () => {
-    try {
-      for (const producto of products) {
-        // Si tu precio viene con "$" puedes limpiarlo así para convertir a número, opcional
-        let precioNum = parseFloat(producto.price.toString().replace(/[^0-9.-]+/g, ""));
-        // Asegúrate de que el campo 'price' sea number
-        const productoAEnviar = { ...producto, price: precioNum };
-        await addDoc(collection(db, "products"), productoAEnviar);
-        console.log(`Producto ${producto.title} subido.`);
-      }
-      alert("Todos los productos fueron subidos a Firestore.");
-    } catch (error) {
-      console.error("Error subiendo productos:", error);
-      alert("Hubo un error al subir los productos.");
-    }
-  };
+    const removeImageField = (index: number) => {
+        const newImageUrls = imageUrls.filter((_, i) => i !== index);
+        setImageUrls(newImageUrls);
+    };
 
-  return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-xl mx-auto p-6 bg-white rounded shadow space-y-4"
-      >
-        <div>
-          <Label>Título</Label>
-          <Input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            placeholder="Título del producto"
-            required
-          />
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const finalImageUrls = imageUrls.map(url => url.trim()).filter(url => url !== '');
+
+        if (!productName || !price || !category || finalImageUrls.length === 0 || !hint) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Por favor, completa todos los campos obligatorios, incluyendo al menos una URL de imagen.',
+            });
+            return;
+        }
+        
+        setIsLoading(true);
+
+        try {
+            const newProduct = {
+                title: productName,
+                price: `$${price}`,
+                category,
+                description,
+                images: finalImageUrls,
+                hint,
+                disponible: isAvailable,
+                isFeatured,
+            };
+            
+            const docRef = await addDoc(collection(db, 'products'), newProduct);
+            
+            toast({
+                title: '¡Producto Guardado!',
+                description: `El producto "${productName}" ha sido agregado con el ID: ${docRef.id}.`,
+            });
+            
+            // Reset form
+            setProductName('');
+            setDescription('');
+            setPrice('');
+            setCategory('');
+            setImageUrls(['']);
+            setHint('');
+            setIsAvailable(true);
+            setIsFeatured(false);
+
+            router.refresh();
+            
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error al Guardar',
+                description: 'No se pudo guardar el producto en la base de datos.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="max-w-2xl mx-auto space-y-8">
+            <div className="text-center">
+                <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
+                    Panel de Administración
+                </h1>
+                <p className="mt-4 text-lg text-foreground/80">
+                    Añade nuevos productos a tu tienda.
+                </p>
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Nuevo Producto</CardTitle>
+                    <CardDescription>Completa los detalles para agregar un nuevo artículo.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="product-name">Nombre del Producto</Label>
+                            <Input 
+                                id="product-name"
+                                value={productName}
+                                onChange={(e) => setProductName(e.target.value)}
+                                placeholder="Ej: Taza de Cerámica"
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Descripción</Label>
+                            <Textarea
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Describe el producto, sus materiales, etc."
+                            />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="price">Precio</Label>
+                                <Input
+                                    id="price"
+                                    type="number"
+                                    value={price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    placeholder="Ej: 6000"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="category">Categoría</Label>
+                                <Select onValueChange={(value: Category) => setCategory(value)} value={category} required>
+                                    <SelectTrigger id="category">
+                                        <SelectValue placeholder="Selecciona una categoría" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map(cat => (
+                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <Label>URLs de las Imágenes</Label>
+                            {imageUrls.map((url, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <Input
+                                        value={url}
+                                        onChange={(e) => handleImageChange(index, e.target.value)}
+                                        placeholder={`https://ejemplo.com/imagen${index + 1}.jpg`}
+                                        required={index === 0}
+                                    />
+                                    {imageUrls.length > 1 && (
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            onClick={() => removeImageField(index)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={addImageField}
+                            >
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Añadir otra imagen
+                            </Button>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="hint">AI Hint (para imágenes)</Label>
+                            <Input 
+                                id="hint"
+                                value={hint}
+                                onChange={(e) => setHint(e.target.value)}
+                                placeholder="Ej: taza blanca"
+                                required
+                            />
+                        </div>
+
+                        <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="is-available"
+                                    checked={isAvailable}
+                                    onCheckedChange={(checked) => setIsAvailable(checked as boolean)}
+                                />
+                                <Label htmlFor="is-available">Disponible</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="is-featured"
+                                    checked={isFeatured}
+                                    onCheckedChange={(checked) => setIsFeatured(checked as boolean)}
+                                />
+                                <Label htmlFor="is-featured">Destacado</Label>
+                            </div>
+                        </div>
+
+                        <div className="pt-4 border-t">
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <UploadCloud className="mr-2 h-4 w-4" />
+                                        Guardar Producto
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
-
-        <div>
-          <Label>Precio</Label>
-          <Input
-            name="price"
-            type="number"
-            value={form.price}
-            onChange={handleChange}
-            placeholder="Precio en ARS"
-            required
-          />
-        </div>
-
-        <div>
-          <Label>Stock</Label>
-          <Input
-            name="stock"
-            type="number"
-            value={form.stock}
-            onChange={handleChange}
-            placeholder="Cantidad disponible"
-            required
-          />
-        </div>
-
-        <div>
-          <Label>Categoría</Label>
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          >
-            <option value="">Seleccionar...</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label>Colores</Label>
-          <select
-            name="colors"
-            multiple
-            value={form.colors}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                colors: Array.from(e.target.selectedOptions, (opt) => opt.value),
-              })
-            }
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            {COLORS.map((color) => (
-              <option key={color.value} value={color.value}>
-                {color.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label>Talles</Label>
-          <select
-            name="sizes"
-            multiple
-            value={form.sizes}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                sizes: Array.from(e.target.selectedOptions, (opt) => opt.value),
-              })
-            }
-            className="w-full p-2 border border-gray-300 rounded"
-          >
-            {SIZES.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <Label>Imagen (URL)</Label>
-          <Input
-            name="image"
-            value={form.image}
-            onChange={handleChange}
-            placeholder="https://..."
-          />
-        </div>
-
-        <Button type="submit" className="w-full mt-4">
-          Crear producto
-        </Button>
-      </form>
-
-      {/* Botón extra para subir todos los productos masivamente */}
-      <div className="max-w-xl mx-auto p-6">
-        <Button onClick={subirTodosProductos} className="w-full mt-6 bg-green-600 hover:bg-green-700">
-          Subir todos los productos de prueba
-        </Button>
-      </div>
-    </>
-  );
+    );
 }

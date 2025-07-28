@@ -19,6 +19,7 @@ import {
   UserPlus,
   User as UserIcon,
   Shield,
+  X,
 } from "lucide-react";
 
 import * as React from "react";
@@ -29,7 +30,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Separator } from "./ui/separator";
-
+import type { Category } from "@/lib/types";
 import { LogoSvg } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
@@ -38,7 +39,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import SearchInput from "./SearchInput";
-import type { Category } from "@/lib/types";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Todos", icon: Layers },
@@ -192,7 +192,16 @@ export default function Header() {
               <span className="sr-only">Abrir menú</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 p-0 flex flex-col">
+          <SheetContent side="right" className="w-72 p-0 flex flex-col" hideCloseButton>
+            <div className="flex justify-between items-center p-4 border-b">
+                 <h3 className="text-lg font-semibold">Menú</h3>
+                 <SheetClose asChild>
+                     <Button variant="ghost" size="icon">
+                         <X className="h-6 w-6" />
+                         <span className="sr-only">Cerrar menú</span>
+                     </Button>
+                 </SheetClose>
+            </div>
             <div className="p-4 border-b">
                 <SearchInput />
             </div>

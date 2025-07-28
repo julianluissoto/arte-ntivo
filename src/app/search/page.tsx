@@ -1,3 +1,4 @@
+
 // src/app/search/page.tsx
 'use client';
 
@@ -7,6 +8,10 @@ import { useEffect, useState, Suspense } from 'react';
 import { Product } from '@/lib/types';
 import { getProducts } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Search, XCircle } from 'lucide-react';
+import { useDebounce } from '@/hooks/useDebounce';
+import { Button } from '@/components/ui/button';
 
 const SearchSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -24,9 +29,13 @@ const SearchSkeleton = () => (
 
 function SearchResults() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q');
+  const initialQuery = searchParams.get('q') || '';
+  
+  const [searchTerm, setSearchTerm] = useState(initialQuery);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 300); // 300ms delay
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -38,30 +47,45 @@ function SearchResults() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = query
+  const filteredProducts = debouncedSearchTerm
     ? products.filter(product =>
-        product.title.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase())
+        product.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
       )
-    : [];
+    : products;
 
   return (
     <div className="space-y-8">
       <section>
         <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
-          Resultados de Búsqueda
+          Búsqueda de Productos
         </h1>
-        {query ? (
-            <p className="mt-4 text-lg text-foreground/80">
-                Mostrando resultados para: <span className="font-semibold">{query}</span>
-            </p>
-        ) : (
-            <p className="mt-4 text-lg text-foreground/80">
-                Por favor, ingresa un término de búsqueda.
-            </p>
-        )}
+        <p className="mt-4 text-lg text-foreground/80">
+          Encuentra lo que necesitas escribiendo en el campo de abajo.
+        </p>
       </section>
+
+      <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar por nombre, descripción, categoría..."
+            className="w-full pl-12 pr-10 text-lg p-6"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1/2 right-4 -translate-y-1/2 h-8 w-8 rounded-full"
+                  onClick={() => setSearchTerm('')}
+              >
+                  <XCircle className="h-6 w-6 text-muted-foreground" />
+              </Button>
+          )}
+      </div>
 
       <section>
         {loading ? (
@@ -73,9 +97,9 @@ function SearchResults() {
             ))}
           </div>
         ) : (
-          query && (
+          debouncedSearchTerm && (
             <div className="text-center py-20 bg-card rounded-lg border border-dashed">
-                <p className="text-xl text-muted-foreground">No se encontraron productos.</p>
+                <p className="text-xl text-muted-foreground">No se encontraron productos para "{debouncedSearchTerm}".</p>
                 <p className="text-muted-foreground mt-2">Intenta con otro término de búsqueda.</p>
             </div>
           )

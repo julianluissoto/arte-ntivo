@@ -1,4 +1,3 @@
-
 // src/components/SearchInput.tsx
 'use client';
 
@@ -12,9 +11,8 @@ export default function SearchInput() {
   const router = useRouter();
 
   const handleSearch = () => {
-    if (searchTerm.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-    }
+    // Navigate to the search page, which will handle the live search
+    router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -25,7 +23,6 @@ export default function SearchInput() {
 
   return (
     <div className="relative">
-      <h3  className="text-xl font-bold font-headline mb-6 text-center text-primary">Que queres personalizar?</h3>
       <Input
         type="search"
         placeholder="Buscar productos..."
