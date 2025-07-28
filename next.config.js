@@ -1,3 +1,4 @@
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -10,10 +11,17 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'res.cloudinary.com', // ¡Añadido Cloudinary aquí!
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me', // Mantenemos RandomUser.me
+        port: '',
+        pathname: '/**',
+      },
+      // Puedes añadir más objetos si tienes imágenes de otros dominios
     ],
   },
 };
