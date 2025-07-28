@@ -1,6 +1,7 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   projectId: "arte-nativo-web",
@@ -18,4 +19,7 @@ const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseCon
 // Initialize Auth for SSR
 const auth: Auth = getAuth(app);
 
-export { app, auth };
+// Initialize Firestore for SSR
+const db: Firestore = getFirestore(app);
+
+export { app, auth, db };

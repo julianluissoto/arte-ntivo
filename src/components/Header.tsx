@@ -29,7 +29,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Separator } from "./ui/separator";
-import type { Category } from "@/lib/mock-data";
+
 import { LogoSvg } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import SearchInput from "./SearchInput";
+import type { Category } from "@/lib/types";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Todos", icon: Layers },

@@ -9,6 +9,7 @@ import { auth } from '@/lib/firebase';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  admin?: boolean; // Agregar propiedad admin si es necesario
 }
 
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });

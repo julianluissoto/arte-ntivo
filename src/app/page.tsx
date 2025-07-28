@@ -1,9 +1,8 @@
 
-import { products } from "@/lib/mock-data";
 import ProductCard from "@/components/ProductCard";
-import type { Category } from "@/lib/mock-data";
 import ProductCarousel from "@/components/ProductCarousel";
-import SearchInput from "@/components/SearchInput";
+import { getProducts } from "@/lib/data";
+import type { Category, Product } from "@/lib/types";
 
 interface HomeProps {
   searchParams?: {
@@ -11,8 +10,10 @@ interface HomeProps {
   };
 }
 
-export default function Home({ searchParams }: HomeProps) {
+export default async function Home({ searchParams }: HomeProps) {
   const selectedCategory = searchParams?.category ?? "Todos";
+
+  const products:Product[] = await getProducts();
 
   const filteredProducts =
     selectedCategory === "Todos"
@@ -23,14 +24,13 @@ export default function Home({ searchParams }: HomeProps) {
 
   return (
     <div className="space-y-8">
-      {selectedCategory === 'Todos' && (
-        <section className="mb-12 text-center">
-          <h2 className="text-3xl font-bold font-headline text-primary mb-6">
-            Destacados
-          </h2>
-          <ProductCarousel products={featuredProducts} />
+      {selectedCategory === 'Todos' && featuredProducts.length > 0 && (
+        <section className="mb-12">
+            <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
+                Productos Destacados
+            </h2>
+            <ProductCarousel products={featuredProducts} />
         </section>
-
       )}
 
       <section>

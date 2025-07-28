@@ -83,13 +83,15 @@ const UserAuthSection = () => {
                     <span>Favoritos</span>
                 </Link>
             </Button>
-             {/* Enlace al panel de administración */}
-            <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                <Link href="/admin">
-                    <Shield className="h-5 w-5" />
-                    <span>Admin</span>
-                </Link>
-            </Button>
+            {/* Mostrar solo si user.isAdmin es true */}
+            {user.uid==="j2cOYjvse9MDWuiENV38m30p8D12" && (
+                <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                    <Link href="/admin">
+                        <Shield className="h-5 w-5" />
+                        <span>Admin</span>
+                    </Link>
+                </Button>
+            )}
             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
                 <LogOut className="h-5 w-5" />
                 <span>Salir</span>
@@ -112,6 +114,7 @@ const UserAuthSection = () => {
         </>
     );
 };
+
 
 export const CategorySidebarSkeleton = () => {
     return (
