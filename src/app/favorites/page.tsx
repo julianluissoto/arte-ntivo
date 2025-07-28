@@ -1,8 +1,8 @@
+
 // src/app/favorites/page.tsx
 'use client';
 
 import ProductCard from "@/components/ProductCard";
-import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Product } from "@/lib/types";
 import { getProducts } from "@/lib/data";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const FavoritesSkeleton = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -29,18 +30,28 @@ const FavoritesSkeleton = () => (
 export default function FavoritesPage() {
     const { user, loading: authLoading } = useAuth();
     const { favoriteIds, loading: favoritesLoading } = useFavorites();
-    const [products, setProducts] = useState<Product[]>([]);
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const [favoriteProducts, setFavoriteProducts] = useState<Product[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
 
+    // Fetch all products once
     useEffect(() => {
         const fetchProducts = async () => {
             setLoadingProducts(true);
-            const allProducts = await getProducts();
-            setProducts(allProducts);
+            const products = await getProducts();
+            setAllProducts(products);
             setLoadingProducts(false);
         };
         fetchProducts();
     }, []);
+    
+    // Update the filtered list whenever favorites or the main product list change
+    useEffect(() => {
+      if (!loadingProducts && !favoritesLoading) {
+        setFavoriteProducts(allProducts.filter(p => favoriteIds.includes(p.id)));
+      }
+    }, [favoriteIds, allProducts, loadingProducts, favoritesLoading]);
+
 
     const isLoading = authLoading || favoritesLoading || loadingProducts;
 
@@ -74,8 +85,6 @@ export default function FavoritesPage() {
         )
     }
     
-    const favoriteProducts = products.filter(p => favoriteIds.includes(p.id));
-
   return (
     <div className="space-y-8">
       <section>
@@ -98,6 +107,9 @@ export default function FavoritesPage() {
             <div className="text-center py-20 bg-card rounded-lg border border-dashed">
                 <p className="text-xl text-muted-foreground">Todavía no tienes favoritos.</p>
                 <p className="text-muted-foreground mt-2">¡Empieza a explorar y guarda lo que más te guste!</p>
+                <Button asChild variant="outline" className="mt-4">
+                    <Link href="/">Explorar productos</Link>
+                </Button>
             </div>
         )}
       </section>

@@ -1,32 +1,46 @@
-// src/hooks/useFavorites.ts
+// src/hooks/useFavorites.tsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
-export const useFavorites = () => {
+interface FavoritesContextType {
+  favoriteIds: string[];
+  isFavorite: (productId: string) => boolean;
+  toggleFavorite: (productId: string) => boolean; // Cambiado para retornar un booleano
+  loading: boolean;
+}
+
+const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+
+export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading from a local source or API
     setLoading(true);
-    const storedFavorites = localStorage.getItem('favorites');
-    if (storedFavorites) {
+    try {
+      const storedFavorites = localStorage.getItem('favorites');
+      if (storedFavorites) {
         setFavoriteIds(new Set(JSON.parse(storedFavorites)));
+      }
+    } catch (error) {
+      console.error("Failed to parse favorites from localStorage", error);
+      setFavoriteIds(new Set());
     }
     setLoading(false);
   }, []);
 
-  const isFavorite = useCallback(
-    (productId: string) => {
-      return favoriteIds.has(productId);
-    },
-    [favoriteIds]
-  );
+  const persistFavorites = (ids: Set<string>) => {
+    try {
+      localStorage.setItem('favorites', JSON.stringify(Array.from(ids)));
+    } catch (error) {
+      console.error("Failed to save favorites to localStorage", error);
+    }
+  };
 
   const toggleFavorite = useCallback((productId: string) => {
     if (!user) {
@@ -35,21 +49,53 @@ export const useFavorites = () => {
         title: '¡Necesitas iniciar sesión!',
         description: 'Para guardar tus favoritos, por favor, inicia sesión.',
       });
-      return;
+      return false; // Retorna false si no hay usuario
     }
-    
-    setFavoriteIds(prev => {
-        const newFavs = new Set(prev);
-        if (newFavs.has(productId)) {
-            newFavs.delete(productId);
-        } else {
-            newFavs.add(productId);
-        }
-        localStorage.setItem('favorites', JSON.stringify(Array.from(newFavs)));
-        return newFavs;
-    });
 
+    let removed = false;
+    setFavoriteIds(prev => {
+      const newFavs = new Set(prev);
+      let message = '';
+      if (newFavs.has(productId)) {
+        newFavs.delete(productId);
+        message = 'Producto quitado de favoritos.';
+        removed = true; // Se marcó como eliminado
+      } else {
+        newFavs.add(productId);
+        message = '¡Producto añadido a favoritos!';
+      }
+      persistFavorites(newFavs);
+      toast({
+        title: message,
+      });
+      return newFavs;
+    });
+    return removed; // Retorna si fue eliminado o no
   }, [user, toast]);
 
-  return { favoriteIds: Array.from(favoriteIds), isFavorite, toggleFavorite, loading };
+  const isFavorite = useCallback(
+    (productId: string) => favoriteIds.has(productId),
+    [favoriteIds]
+  );
+
+  const value = {
+    favoriteIds: Array.from(favoriteIds),
+    isFavorite,
+    toggleFavorite,
+    loading
+  };
+
+  return (
+    <FavoritesContext.Provider value={value}>
+      {children}
+    </FavoritesContext.Provider>
+  );
+};
+
+export const useFavorites = () => {
+  const context = useContext(FavoritesContext);
+  if (context === undefined) {
+    throw new Error('useFavorites must be used within a FavoritesProvider');
+  }
+  return context;
 };
