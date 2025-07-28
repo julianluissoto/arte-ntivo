@@ -27,3 +27,11 @@ export interface Product {
   }
   disponible?: boolean;
 }
+// lib/types.ts
+export interface Testimonial {
+  id: string;
+  author: string;
+  text: string;
+  rating?: number; // Opcional, si quieres estrellas u otra valoración
+  avatarUrl?: string; // Opcional, para la imagen del usuario
+}
