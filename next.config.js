@@ -17,7 +17,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'randomuser.me', // Mantenemos RandomUser.me
+        hostname: '**', // Mantenemos RandomUser.me
         port: '',
         pathname: '/**',
       },
