@@ -1,4 +1,3 @@
-
 // src/app/signup/page.tsx
 'use client';
 
@@ -13,6 +12,7 @@ import { UserPlus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { addUserToCustomers } from '@/lib/data';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -31,7 +31,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!email || !password || !confirmPassword) {
       toast({ variant: 'destructive', title: 'Error', description: 'Por favor, completa todos los campos.' });
       return;
@@ -42,12 +42,12 @@ export default function SignUpPage() {
     }
     setIsLoading(true);
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await addUserToCustomers(userCredential.user);
         toast({ title: '¡Cuenta creada!', description: 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.' });
         router.push('/login');
-      })
-      .catch((error) => {
+    } catch (error: any) {
         let description = 'Ocurrió un error al crear la cuenta.';
         if (error.code === 'auth/email-already-in-use') {
           description = 'Este correo electrónico ya está en uso.';
@@ -57,26 +57,24 @@ export default function SignUpPage() {
           description = 'El correo electrónico no es válido.';
         }
         toast({ variant: 'destructive', title: 'Error de registro', description });
-      })
-      .finally(() => {
+    } finally {
         setIsLoading(false);
-      });
+    }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        await addUserToCustomers(result.user);
         toast({ title: '¡Bienvenido!', description: 'Has iniciado sesión con Google correctamente.' });
         router.push('/');
-      })
-      .catch((error) => {
+    } catch (error) {
         toast({ variant: 'destructive', title: 'Error de Google', description: 'No se pudo iniciar sesión con Google. Intenta de nuevo.' });
-      })
-      .finally(() => {
+    } finally {
         setIsLoading(false);
-      });
+    }
   };
 
   return (

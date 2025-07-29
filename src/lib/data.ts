@@ -1,7 +1,8 @@
 // src/lib/data.ts
-import { Product } from './types';
-import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { Product, Review, Customer } from './types';
+import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { User } from 'firebase/auth';
 
 export async function getProducts(): Promise<Product[]> {
   try {
@@ -22,7 +23,6 @@ export async function getProducts(): Promise<Product[]> {
     
   } catch (error) {
     console.error("❌ Error al obtener los productos:", error);
-    // En caso de error, devolvemos un array vacío para que la app no se rompa
     return [];
   }
 }
@@ -65,3 +65,54 @@ export async function deleteProduct(id: string) {
         throw new Error("No se pudo eliminar el producto");
     }
 }
+
+// Functions for Customers and Reviews
+
+export async function addUserToCustomers(user: User) {
+    const customerRef = doc(db, 'customers', user.uid);
+    const customerSnap = await getDoc(customerRef);
+
+    if (!customerSnap.exists()) {
+        const customerData: Customer = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || 'Usuario Anónimo',
+            photoURL: user.photoURL,
+        };
+        await setDoc(customerRef, customerData);
+    }
+}
+
+export async function addReview(review: Omit<Review, 'id' | 'createdAt'>) {
+    try {
+        await addDoc(collection(db, 'reviews'), {
+            ...review,
+            createdAt: serverTimestamp(),
+        });
+    } catch (error) {
+        console.error("❌ Error al añadir la reseña:", error);
+        throw new Error("No se pudo enviar la reseña");
+    }
+}
+
+export async function getReviews(): Promise<Review[]> {
+    try {
+        const reviewsCollection = collection(db, "reviews");
+        const q = query(reviewsCollection, orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        return snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        } as Review));
+
+    } catch (error) {
+        console.error("❌ Error al obtener las reseñas:", error);
+        return [];
+    }
+}
+

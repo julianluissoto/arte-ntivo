@@ -2,15 +2,14 @@
 "use client";
 
 import Slider from "react-slick";
-import { Testimonial } from "@/lib/types";
+import { Review} from "@/lib/types";
 import TestimonialCard from "./TestimonialCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface TestimonialCarouselProps {
-  testimonials: Testimonial[];
+  testimonials: Review[];
 }
 
-// Componente para el botón de flecha anterior personalizado
 function PrevArrow(props: any) {
   const { className, style, onClick } = props;
   return (
@@ -25,7 +24,6 @@ function PrevArrow(props: any) {
   );
 }
 
-// Componente para el botón de flecha siguiente personalizado
 function NextArrow(props: any) {
   const { className, style, onClick } = props;
   return (
@@ -49,7 +47,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    
+
     responsive: [
       {
         breakpoint: 1024,
@@ -58,7 +56,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           slidesToScroll: 1,
           infinite: true,
           dots: true,
-          // También aquí si quieres que las flechas aparezcan en estos breakpoints
           prevArrow: <PrevArrow />,
           nextArrow: <NextArrow />,
         },
@@ -69,7 +66,6 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           slidesToShow: 1,
           slidesToScroll: 1,
           initialSlide: 1,
-          // Y aquí si también las quieres en móvil
           prevArrow: <PrevArrow />,
           nextArrow: <NextArrow />,
         },
@@ -86,7 +82,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
       <Slider {...settings}>
         {testimonials.map((testimonial) => (
           <div key={testimonial.id}>
-            <TestimonialCard testimonial={testimonial} />
+            <TestimonialCard review={testimonial} />
           </div>
         ))}
       </Slider>

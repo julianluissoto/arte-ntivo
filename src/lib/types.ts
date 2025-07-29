@@ -13,7 +13,7 @@ export type Category =
   | "Todos";
 
 export interface Product {
-  id: string; // Changed from number to string to match Firestore document ID
+  id: string; 
   title: string;
   price: string;
   images: string[];
@@ -27,11 +27,32 @@ export interface Product {
   }
   disponible?: boolean;
 }
-// lib/types.ts
+
+export interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  userImage?: string | null;
+  rating: number;
+  comment: string;
+  createdAt: {
+    seconds: number;
+    nanoseconds: number;
+  };
+}
+
 export interface Testimonial {
   id: string;
   author: string;
   text: string;
-  rating?: number; // Opcional, si quieres estrellas u otra valoración
-  avatarUrl?: string; // Opcional, para la imagen del usuario
+  rating: number;
+  avatarUrl: string;
+}
+
+
+export interface Customer {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL?: string | null;
 }

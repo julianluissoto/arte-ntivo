@@ -1,10 +1,10 @@
-
+// app/page.tsx
 import ProductCard from "@/components/ProductCard";
 import ProductCarousel from "@/components/ProductCarousel";
-import { getProducts } from "@/lib/data";
-import type { Category, Product, Testimonial } from "@/lib/types";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { getTestimonials } from "./api/testimonials/route";
+import { getProducts, getReviews } from "@/lib/data"; // Tus funciones de Firestore
+import type { Category, Product, Review } from "@/lib/types"; // Importa Review
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import CustomerReviews from "@/components/CustomerReviews";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 
 interface HomeProps {
@@ -16,12 +16,15 @@ interface HomeProps {
 
 const PRODUCTS_PER_PAGE = 8;
 
+export const revalidate = 60;
+
+
 export default async function Home({ searchParams }: HomeProps) {
   const selectedCategory = searchParams?.category ?? "Todos";
   const currentPage = Number(searchParams?.page ?? 1);
 
   const allProducts: Product[] = await getProducts();
-  const testimonials: Testimonial[] = await getTestimonials(); // Obtén los comentarios
+  const reviews: Review[] = await getReviews(); // Usando Review
 
   const filteredProductsByCategory =
     selectedCategory === "Todos"
@@ -33,7 +36,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const productsForCurrentPage = filteredProductsByCategory.slice(offset, offset + PRODUCTS_PER_PAGE);
 
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
-  
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -41,15 +44,15 @@ export default async function Home({ searchParams }: HomeProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
-        <section className="mb-12">
-            <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
-                Productos Destacados
-            </h2>
-            <div className="overflow-hidden">
-              <ProductCarousel products={featuredProducts} />
-            </div>
+        <section>
+          <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
+            Productos Destacados
+          </h2>
+          <div className="overflow-hidden">
+            <ProductCarousel products={featuredProducts} />
+          </div>
         </section>
       )}
 
@@ -75,40 +78,50 @@ export default async function Home({ searchParams }: HomeProps) {
 
       {totalPages > 1 && (
         <section className="pt-8">
-           <Pagination>
-              <PaginationContent>
-                {currentPage > 1 && (
-                    <PaginationItem>
-                        <PaginationPrevious href={createPageURL(currentPage - 1)} />
-                    </PaginationItem>
-                )}
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <PaginationItem key={page}>
-                        <PaginationLink href={createPageURL(page)} isActive={currentPage === page}>
-                            {page}
-                        </PaginationLink>
-                    </PaginationItem>
-                ))}
+          <Pagination>
+            <PaginationContent>
+              {currentPage > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious href={createPageURL(currentPage - 1)} />
+                </PaginationItem>
+              )}
 
-                {currentPage < totalPages && (
-                    <PaginationItem>
-                        <PaginationNext href={createPageURL(currentPage + 1)} />
-                    </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <PaginationItem key={page}>
+                  <PaginationLink href={createPageURL(page)} isActive={currentPage === page}>
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {currentPage < totalPages && (
+                <PaginationItem>
+                  <PaginationNext href={createPageURL(currentPage + 1)} />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         </section>
       )}
-      {/* Sección del Carrusel de Comentarios de Usuarios */}
-      {selectedCategory === "Todos" && testimonials.length > 0 && (
-        <section className="mb-12 py-8 ">
-          <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-            Lo que dicen nuestros clientes
-          </h2>
-          <TestimonialCarousel testimonials={testimonials} />
+
+      {selectedCategory === 'Todos' && (
+        <section className="py-12 border-t space-y-12">
+          <div>
+            <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+              Lo que dicen nuestros clientes
+            </h2>
+            {reviews.length > 0 ? (
+              <TestimonialCarousel testimonials={reviews} />
+            ) : (
+              <p className="text-center text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
+            )}
+          </div>
+
+          <CustomerReviews />
+
         </section>
       )}
+
     </div>
   );
 }

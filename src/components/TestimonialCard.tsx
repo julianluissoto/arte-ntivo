@@ -1,39 +1,53 @@
-// components/TestimonialCard.tsx
-import { Testimonial } from "@/lib/types";
-import Image from "next/image";
+// src/components/TestimonialCard.tsx
+import { Review } from "@/lib/types";
 import { Star } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface TestimonialCardProps {
-  testimonial: Testimonial;
+  review: Review;
 }
 
-export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
+export default function TestimonialCard({ review }: TestimonialCardProps) {
+  const getInitials = (name: string) => {
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
-    <div className="bg-card p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center h-full mx-2">
-      {/* {testimonial.avatarUrl && (
-        <div className="relative w-20 h-20 rounded-full overflow-hidden mb-4 border-2 border-primary">
-          <Image
-            src={testimonial.avatarUrl}
-            alt={testimonial.author}
-            layout="fill"
-            objectFit="cover"
-          />
-        </div>
-      )} */}
-      <p className="text-lg italic text-foreground mb-4">"{testimonial.text}"</p>
-      {testimonial.rating && (
-        <div className="flex justify-center mb-2">
+   
+    <div className="bg-violet-200 p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center h-full mx-2">
+     
+      <Avatar className="w-20 h-20 mb-4 border-2 border-primary">
+        <AvatarImage src={review.userImage ?? ''} alt={review.userName} />
+        <AvatarFallback className="text-2xl">
+          {getInitials(review.userName)}
+        </AvatarFallback>
+      </Avatar>
+
+    
+      <p className="text-lg italic text-gray-800 mb-4 flex-grow min-h-[120px] flex items-center justify-center">
+        "{review.comment}"
+      </p>
+
+    
+      {review.rating && (
+        <div className="flex justify-center mb-2 flex-shrink-0">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
               className={`w-5 h-5 ${
-                i < testimonial.rating! ? "text-yellow-500 fill-current" : "text-muted"
+                i < review.rating! ? "text-yellow-500 fill-yellow-500" : "text-gray-400"
               }`}
             />
           ))}
         </div>
       )}
-      <p className="font-semibold text-primary">- {testimonial.author}</p>
+
+      
+      <p className="font-semibold text-amber-800 flex-shrink-0">- {review.userName}</p>
     </div>
   );
 }
