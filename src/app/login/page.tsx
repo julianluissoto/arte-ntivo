@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from 'firebase/auth';
 import { Separator } from '@/components/ui/separator';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -32,6 +32,27 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  const handleResendVerification = async () => {
+    setIsLoading(true);
+    try {
+        if (auth.currentUser) {
+            await sendEmailVerification(auth.currentUser);
+            toast({
+                title: 'Correo enviado',
+                description: 'Se ha reenviado el correo de verificación. Revisa tu bandeja de entrada.',
+            });
+        }
+    } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'No se pudo reenviar el correo de verificación.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
       toast({
@@ -44,12 +65,32 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        if (!userCredential.user.emailVerified) {
+            toast({
+              variant: 'destructive',
+              title: 'Verificación requerida',
+              description: (
+                <div>
+                  <p>Por favor, verifica tu correo electrónico para iniciar sesión.</p>
+                  <Button variant="link" className="p-0 h-auto mt-2 text-destructive-foreground" onClick={handleResendVerification}>
+                    Reenviar correo de verificación
+                  </Button>
+                </div>
+              ),
+              duration: 10000,
+            });
+            await auth.signOut();
+            return;
+        }
+
         toast({
           title: '¡Bienvenido!',
           description: 'Has iniciado sesión correctamente.',
         });
         router.push('/profile');
+
     } catch(error: any) {
         let description = 'Ocurrió un error al iniciar sesión.';
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {

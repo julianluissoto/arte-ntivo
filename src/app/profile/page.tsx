@@ -10,9 +10,10 @@ import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -94,9 +95,24 @@ export default function ProfilePage() {
           <CardTitle className="text-3xl font-headline">Mi Perfil</CardTitle>
           <CardDescription>Esta es tu información de usuario.</CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-           <p className="text-lg font-medium text-foreground">{user.displayName || 'Usuario'}</p>
-           <p className="text-sm text-muted-foreground">{user.email}</p>
+        <CardContent className="text-center space-y-4">
+           <div>
+            <p className="text-lg font-medium text-foreground">{user.displayName || 'Usuario'}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+           </div>
+           <div>
+             {user.emailVerified ? (
+                <Badge variant="secondary" className="border-green-500 text-green-700 bg-green-100">
+                    <ShieldCheck className="h-4 w-4 mr-1" />
+                    Email Verificado
+                </Badge>
+             ) : (
+                <Badge variant="destructive">
+                    <ShieldAlert className="h-4 w-4 mr-1" />
+                    Email No Verificado
+                </Badge>
+             )}
+           </div>
         </CardContent>
         <CardFooter>
             <Button variant="destructive" className="w-full" onClick={handleLogout}>

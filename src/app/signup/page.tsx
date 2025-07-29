@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { UserPlus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, sendEmailVerification, signInWithPopup } from 'firebase/auth';
 import { addUserToCustomers } from '@/lib/data';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -44,9 +44,17 @@ export default function SignUpPage() {
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
         await addUserToCustomers(userCredential.user);
-        toast({ title: '¡Cuenta creada!', description: 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.' });
+        toast({ 
+            title: '¡Revisa tu correo!', 
+            description: 'Hemos enviado un enlace de verificación a tu correo electrónico. Por favor, verifica tu cuenta para poder iniciar sesión.',
+            duration: 10000,
+        });
+
+        await auth.signOut();
         router.push('/login');
+       
     } catch (error: any) {
         let description = 'Ocurrió un error al crear la cuenta.';
         if (error.code === 'auth/email-already-in-use') {
