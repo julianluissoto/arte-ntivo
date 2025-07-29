@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brush, Minus, Plus, ChevronUp, ChevronDown, Edit } from 'lucide-react';
+import { Brush, Minus, Plus, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,13 +26,11 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
   const [selectedColor, setSelectedColor] = useState<string | undefined>(product.options?.colors?.[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.options?.sizes?.[0]);
   
-  // Ensure imageUrls is always an array and handle case where product.images might not exist
   const imageUrls = Array.isArray(product.images) ? product.images : (product.images ? [product.images] : []);
   
   const [selectedImage, setSelectedImage] = useState<string>(imageUrls[0] ?? '');
 
   useEffect(() => {
-    // Update selected image, color, and size if the product prop changes.
     const newImageUrls = Array.isArray(product.images) ? product.images : (product.images ? [product.images] : []);
     setSelectedImage(newImageUrls[0] ?? '');
     setSelectedColor(product.options?.colors?.[0]);
@@ -47,36 +45,28 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
     <div className="max-w-6xl mx-auto p-4">
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Product Image Gallery */}
-        <div className="grid grid-cols-[80px_1fr] gap-4 items-start">
-            <div className="flex flex-col gap-3 items-center">
-                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <ChevronUp className="h-5 w-5" />
-                 </Button>
-                 <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto no-scrollbar">
-                    {imageUrls.map((image, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setSelectedImage(image)}
-                            className={cn(
-                                "relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0",
-                                selectedImage === image ? 'border-primary' : 'border-transparent hover:border-primary/50'
-                            )}
-                        >
-                            <Image
-                                src={image}
-                                alt={`${product.title} thumbnail ${index + 1}`}
-                                width={80}
-                                height={80}
-                                className="object-cover w-full h-full"
-                            />
-                        </button>
-                    ))}
-                 </div>
-                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <ChevronDown className="h-5 w-5" />
-                 </Button>
+        <div className="flex flex-col-reverse md:grid md:grid-cols-[80px_1fr] gap-4 items-start overflow-hidden">
+            <div className="w-full md:w-auto flex flex-row md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar py-2 md:py-0 md:max-h-[480px]">
+                {imageUrls.map((image, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setSelectedImage(image)}
+                        className={cn(
+                            "relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0",
+                            selectedImage === image ? 'border-primary' : 'border-transparent hover:border-primary/50'
+                        )}
+                    >
+                        <Image
+                            src={image}
+                            alt={`${product.title} thumbnail ${index + 1}`}
+                            width={80}
+                            height={80}
+                            className="object-cover w-full h-full"
+                        />
+                    </button>
+                ))}
             </div>
-            <div className="aspect-square relative bg-card border rounded-lg overflow-hidden">
+            <div className="aspect-square w-full relative bg-card border rounded-lg overflow-hidden">
                 {selectedImage ? (
                     <Image
                         src={selectedImage}
