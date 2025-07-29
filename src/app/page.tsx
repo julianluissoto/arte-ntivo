@@ -6,6 +6,7 @@ import type { Category, Product, Review } from "@/lib/types"; // Importa Review
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import CustomerReviews from "@/components/CustomerReviews";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
+import Ticker from "@/components/Ticker";
 
 interface HomeProps {
   searchParams?: {
@@ -36,7 +37,11 @@ export default async function Home({ searchParams }: HomeProps) {
   const productsForCurrentPage = filteredProductsByCategory.slice(offset, offset + PRODUCTS_PER_PAGE);
 
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
-
+const tickerMessages = [
+    "¡Aprovecha las promos por cantidad en stickers!",
+    "Recibimos todos los medios de pago",
+    "12 años de experiencia"
+  ];
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -45,6 +50,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <div className="space-y-12">
+      <Ticker messages={tickerMessages} />
       {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
         <section>
           <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">

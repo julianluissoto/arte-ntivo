@@ -41,13 +41,6 @@ export interface Review {
   };
 }
 
-export interface Testimonial {
-  id: string;
-  author: string;
-  text: string;
-  rating: number;
-  avatarUrl: string;
-}
 
 
 export interface Customer {

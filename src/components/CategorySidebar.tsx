@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield } from "lucide-react";
 import { Separator } from "./ui/separator";
-import type { Category } from "@/lib/mock-data";
+import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogoSvg } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
@@ -83,15 +83,13 @@ const UserAuthSection = () => {
                     <span>Favoritos</span>
                 </Link>
             </Button>
-            {/* Mostrar solo si user.isAdmin es true */}
-            {user.uid==="j2cOYjvse9MDWuiENV38m30p8D12" && (
-                <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                    <Link href="/admin">
-                        <Shield className="h-5 w-5" />
-                        <span>Admin</span>
-                    </Link>
-                </Button>
-            )}
+             {/* Enlace al panel de administración */}
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/admin">
+                    <Shield className="h-5 w-5" />
+                    <span>Admin</span>
+                </Link>
+            </Button>
             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
                 <LogOut className="h-5 w-5" />
                 <span>Salir</span>
@@ -115,10 +113,9 @@ const UserAuthSection = () => {
     );
 };
 
-
 export const CategorySidebarSkeleton = () => {
     return (
-        <aside className="hidden  md:flex flex-col w-64 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
+        <aside className="hidden md:flex flex-col w-64 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
             <div className="flex justify-center mb-10">
                 <Skeleton className="h-12 w-32" />
             </div>

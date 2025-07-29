@@ -18,7 +18,7 @@ export default function TestimonialCard({ review }: TestimonialCardProps) {
 
   return (
    
-    <div className="bg-violet-200 p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center h-full mx-2">
+    <div className="bg-secondary p-6 rounded-lg shadow-md border border-border flex flex-col items-center text-center h-full mx-2">
      
       <Avatar className="w-20 h-20 mb-4 border-2 border-primary">
         <AvatarImage src={review.userImage ?? ''} alt={review.userName} />

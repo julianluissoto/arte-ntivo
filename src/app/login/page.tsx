@@ -89,7 +89,7 @@ export default function LoginPage() {
           title: '¡Bienvenido!',
           description: 'Has iniciado sesión correctamente.',
         });
-        router.push('/profile');
+        router.push('/');
 
     } catch(error: any) {
         let description = 'Ocurrió un error al iniciar sesión.';

@@ -21,7 +21,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Si ha terminado de cargar y no hay usuario, redirigir al login.
+  
     if (!loading && !user) {
       router.push('/login');
     }
@@ -53,7 +53,7 @@ export default function ProfilePage() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Muestra el skeleton solo mientras está cargando.
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -76,8 +76,7 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  // Si no está cargando pero no hay usuario, no renderiza nada (será redirigido por el useEffect).
+ 
   if (!user) {
       return null;
   }

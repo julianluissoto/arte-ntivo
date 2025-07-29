@@ -1,6 +1,6 @@
 // src/lib/data.ts
 import { Product, Review, Customer } from './types';
-import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from 'firebase/auth';
 
@@ -8,7 +8,7 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const productsCollection = collection(db, "products");
     const snapshot = await getDocs(productsCollection);
-    
+
     if (snapshot.empty) {
       console.log("No se encontraron productos en Firestore.");
       return [];
@@ -20,7 +20,7 @@ export async function getProducts(): Promise<Product[]> {
     } as Product));
 
     return firestoreProducts;
-    
+
   } catch (error) {
     console.error("❌ Error al obtener los productos:", error);
     return [];
@@ -36,7 +36,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() } as Product;
     }
-    
+
     console.log(`No se encontró ningún producto con el id: ${id}`);
     return null;
 
@@ -105,14 +105,19 @@ export async function getReviews(): Promise<Review[]> {
             return [];
         }
 
-        return snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        } as Review));
+        return snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const createdAt = data.createdAt as Timestamp;
+
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: createdAt ? createdAt.toDate().toISOString() : new Date().toISOString(),
+            } as unknown as Review;
+        });
 
     } catch (error) {
         console.error("❌ Error al obtener las reseñas:", error);
         return [];
     }
 }
-

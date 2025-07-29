@@ -148,7 +148,7 @@ const AuthSectionMobile = () => {
                     </SheetClose>
                     <Button variant="outline" onClick={handleLogout} className="w-full justify-start gap-3">
                         <LogOut className="h-5 w-5" />
-                        <span>Logout</span>
+                        <span>Salir</span>
                     </Button>
                 </>
             ) : (
@@ -157,7 +157,7 @@ const AuthSectionMobile = () => {
                         <Button variant="outline" asChild className="w-full justify-start gap-3">
                             <Link href="/login">
                                 <LogIn className="h-5 w-5" />
-                                <span>Login</span>
+                                <span>Ingresar</span>
                             </Link>
                         </Button>
                     </SheetClose>
@@ -165,7 +165,7 @@ const AuthSectionMobile = () => {
                         <Button variant="outline" asChild className="w-full justify-start gap-3">
                             <Link href="/signup">
                                 <UserPlus className="h-5 w-5" />
-                                <span>Sign Up</span>
+                                <span>Registrarme</span>
                             </Link>
                         </Button>
                     </SheetClose>
