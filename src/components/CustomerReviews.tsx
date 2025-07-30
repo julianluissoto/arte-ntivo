@@ -6,7 +6,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { addReview, getReviews } from "@/lib/data";
-import { Review } from "@/lib/types";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";

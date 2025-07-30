@@ -40,14 +40,14 @@ function NextArrow(props: any) {
 
 export default function TestimonialCarousel({ testimonials }: TestimonialCarouselProps) {
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 300,
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-
+    arrows: true,  
     responsive: [
       {
         breakpoint: 1024,
@@ -55,7 +55,7 @@ export default function TestimonialCarousel({ testimonials }: TestimonialCarouse
           slidesToShow: 2,
           slidesToScroll: 1,
           infinite: true,
-          dots: true,
+          dots: false,
           prevArrow: <PrevArrow />,
           nextArrow: <NextArrow />,
         },
