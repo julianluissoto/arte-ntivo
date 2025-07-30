@@ -7,7 +7,7 @@ import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
-import { LogoSvg } from "./LogoSvg";
+import { Logo } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -153,7 +153,7 @@ export default function CategorySidebar() {
         <aside className="hidden md:flex flex-col w-64 bg-card border-r h-screen sticky top-0">
             <div className="p-4 flex justify-center">
                 <Link href="/" className="inline-flex items-center">
-                    <LogoSvg className="h-12 w-auto mb-10" />
+                    <Logo className="h-12 w-auto mb-10" />
                 </Link>
             </div>
             

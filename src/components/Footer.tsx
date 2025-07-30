@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Facebook, Instagram, MessageCircle } from 'lucide-react';
-import { LogoSvg } from './LogoSvg';
+import { Logo } from './LogoSvg';
 
 
 export default function Footer() {
@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex items-center gap-2 mb-4">
-              <LogoSvg className="h-10 w-auto text-primary mb-10" />
+              <Logo className="h-10 w-auto text-primary mb-10" />
             </div>
             
             <p className="text-sm mt-4 text-white/80">

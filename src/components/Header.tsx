@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
-import { LogoSvg } from "./LogoSvg";
+import { Logo} from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -183,7 +183,7 @@ export default function Header() {
     <header className="bg-card shadow-sm sticky top-0 z-40 md:hidden">
       <div className="container mx-auto flex items-center justify-between p-4">
         <Link href="/" className="flex items-center gap-2 text-primary">
-          <LogoSvg className="w-24 h-auto" />
+          <Logo className="w-24 h-auto" />
         </Link>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>

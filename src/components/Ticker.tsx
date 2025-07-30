@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 
 interface TickerProps {
   messages: string[];
+  direccion?: "der" | "izq"; // Keep your original prop names
 }
 
 const TickerContent = ({ messages }: TickerProps) => (
@@ -18,15 +19,19 @@ const TickerContent = ({ messages }: TickerProps) => (
   </div>
 );
 
-export default function Ticker({ messages }: TickerProps) {
-  
-  const fullMessages = [...messages, ...messages];
+export default function Ticker({ messages, direccion = "izq" }: TickerProps) {
+  const fullMessages = [...messages, ...messages, ...messages, ...messages]; // Repeat messages to ensure continuous scrolling
+
+  // Determine animation class based on 'direccion' prop
+  const animationClass =
+    direccion === "izq" ? "animate-marquee-forward" : "animate-marquee-backward";
 
   return (
-    <div className="bg-primary text-primary-foreground relative flex w-full overflow-hidden py-2 shadow-md">
-       <div className="flex whitespace-nowrap animate-marquee items-center">
-          <TickerContent messages={fullMessages} />
-          <TickerContent messages={fullMessages} />
+    
+   <div className={`${direccion === 'izq' ? 'bg-primary' : 'bg-secondary'} text-primary-foreground relative flex w-full overflow-hidden py-2 shadow-md`}>
+      <div className={`flex whitespace-nowrap items-center ${animationClass}`}>
+        <TickerContent messages={fullMessages} />
+        <TickerContent messages={fullMessages} />
       </div>
     </div>
   );

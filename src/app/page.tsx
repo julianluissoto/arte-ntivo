@@ -50,7 +50,7 @@ const tickerMessages = [
 
   return (
     <div className="space-y-12">
-      <Ticker messages={tickerMessages} />
+      <Ticker messages={tickerMessages} direccion="izq" />
       {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
         <section>
           <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
@@ -61,6 +61,7 @@ const tickerMessages = [
           </div>
         </section>
       )}
+      <Ticker  messages={tickerMessages} direccion ="der" />
 
       <section>
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">

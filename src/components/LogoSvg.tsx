@@ -10,7 +10,7 @@ interface LogoProps {
   height?: number;
 }
 
-export const LogoSvg = ({ className, width = 150, height = 80 }: LogoProps) => {
+export const Logo = ({ className, width = 150, height = 80 }: LogoProps) => {
   return (
     <div className={cn("relative", className)}>
       <Image

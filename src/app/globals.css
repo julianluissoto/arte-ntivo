@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --background: 45 33% 95%; /* Light Beige */
-    --foreground: 35 20% 20%; /* Dark Brown/Gray */
-    --card: 220 10% 92%; /* Light Gray */
-    --card-foreground: 35 20% 20%;
+    --background: 50 33% 90%; /* Light Beige */
+    --foreground: 35 20% 10%; /* Dark Brown/Gray */
+    --card: 60 50% 80%; /* beige */
+    --card-foreground: 60 20% 20%;
     --popover: 220 10% 92%;
     --popover-foreground: 35 20% 20%;
     --primary: 24 96% 51%; /* Dark Orange */
@@ -16,7 +16,7 @@
     --secondary-foreground: 35 20% 20%;
     --muted: 220 10% 88%;
     --muted-foreground: 220 9% 45%;
-    --accent: 35 20% 50%;
+    --accent: 26 37% 70%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
