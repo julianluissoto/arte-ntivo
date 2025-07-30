@@ -9,12 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brush, Minus, Plus, Edit } from 'lucide-react';
+import { Brush, Minus, Plus, Edit, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import EditProductForm from '@/components/EditProductForm';
+import { useShare } from '@/hooks/use-share';
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -40,6 +41,8 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
   const handleQuantityChange = (amount: number) => {
     setQuantity(prev => Math.max(1, prev + amount));
   };
+
+  const {handleShare} = useShare()
   
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -187,12 +190,19 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             {/* <Button size="lg" className="w-full" disabled={product.disponible === false}>Agregar al Carrito</Button> //TODO INCORPORAR */}
             {product.disponible !== false && (
-                <Button size="lg" variant="outline" className="w-full" asChild>
+              <>
+               <Button size="lg" variant="outline" className="w-full" asChild>
                     <Link href="/crear">
                         <Brush className="mr-2 h-5 w-5" />
                         Personalizar
                     </Link>
                 </Button>
+                 <button onClick={()=>handleShare()} aria-label="Share page" className="hover:text-primary">
+                <Share2 className="h-6 w-6" />
+              </button>
+              </>
+               
+                
             )}
           </div>
         </div>

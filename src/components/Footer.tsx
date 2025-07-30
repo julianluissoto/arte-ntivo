@@ -6,39 +6,12 @@ import Link from 'next/link';
 import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet, Share2 } from 'lucide-react';
 import { Logo } from './LogoSvg';
 import { useToast } from '@/hooks/use-toast';
+import { useShare } from '@/hooks/use-share';
 
 export default function Footer() {
-  const { toast } = useToast();
-
-  const handleShare = async () => {
-    const shareData = {
-      title: 'Arte Nativo Estampados',
-      text: '¡Descubre productos personalizados únicos en Arte Nativo!',
-      url: window.location.origin,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        throw new Error('Web Share API not supported');
-      }
-    } catch (err) {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        toast({
-          title: '¡Enlace Copiado!',
-          description: 'El enlace a la tienda ha sido copiado a tu portapapeles.',
-        });
-      } catch (copyErr) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'No se pudo compartir ni copiar el enlace.',
-        });
-      }
-    }
-  };
+  
+ const { handleShare } = useShare(); 
+  
 
 
   return (
@@ -96,26 +69,26 @@ export default function Footer() {
           </div>
 
           {/* Columna Medios de Pago */}
-          <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-                <div className="flex flex-col items-center md:items-start text-white/80">
-                    <Banknote className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Efectivo</span>
-                </div>
-                <div className="flex flex-col items-center md:items-start text-white/80">
-                    <Landmark className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Transferencia</span>
-                </div>
-                <div className="flex flex-col items-center md:items-start text-white/80">
-                    <CreditCard className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Crédito</span>
-                </div>
-                <div className="flex flex-col items-center md:items-start text-white/80">
-                    <Wallet className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Débito</span>
-                </div>
-            </div>
+          <div className="flex flex-col text-center md:text-left">
+              <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col items-center md:items-start text-white/80">
+                      <Banknote className="h-8 w-8 mb-1"/>
+                      <span className="text-xs">Efectivo</span>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start text-white/80">
+                      <Landmark className="h-8 w-8 mb-1"/>
+                      <span className="text-xs">Transferencia</span>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start text-white/80">
+                      <CreditCard className="h-8 w-8 mb-1"/>
+                      <span className="text-xs">Crédito</span>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start text-white/80">
+                      <Wallet className="h-8 w-8 mb-1"/>
+                      <span className="text-xs">Débito</span>
+                  </div>
+              </div>
           </div>
 
           {/* Columna Seguinos */}
@@ -130,7 +103,7 @@ export default function Footer() {
               href="https://www.instagram.com/artenativoremeras/?hl=es-la" aria-label="Instagram" className="text-white/80 hover:text-secondary">
                 <Instagram className="h-6 w-6" />
               </Link>
-              <button onClick={handleShare} aria-label="Share page" className="text-white/80 hover:text-secondary">
+              <button onClick={()=>handleShare()} aria-label="Share page" className="text-white/80 hover:text-secondary">
                 <Share2 className="h-6 w-6" />
               </button>
             </div>
