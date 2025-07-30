@@ -185,7 +185,7 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button size="lg" className="w-full" disabled={product.disponible === false}>Agregar al Carrito</Button>
+            {/* <Button size="lg" className="w-full" disabled={product.disponible === false}>Agregar al Carrito</Button> //TODO INCORPORAR */}
             {product.disponible !== false && (
                 <Button size="lg" variant="outline" className="w-full" asChild>
                     <Link href="/crear">
