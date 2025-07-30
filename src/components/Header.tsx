@@ -1,3 +1,4 @@
+
 // src/components/Header.tsx
 "use client";
 
@@ -31,7 +32,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
-import { Logo} from "./LogoSvg";
+import { Logo } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -122,33 +123,35 @@ const AuthSectionMobile = () => {
         <div className="mt-auto p-4 border-t space-y-2">
             {user ? (
                 <>
-                    <SheetClose asChild>
-                        <Button variant="outline" asChild className="w-full justify-start gap-3">
-                            <Link href="/profile">
-                                <UserIcon className="h-5 w-5" />
-                                <span>Mi Perfil</span>
-                            </Link>
-                        </Button>
-                    </SheetClose>
-                    <SheetClose asChild>
-                        <Button variant="outline" asChild className="w-full justify-start gap-3">
-                            <Link href="/favorites">
-                                <Heart className="h-5 w-5" />
-                                <span>Favoritos</span>
-                            </Link>
-                        </Button>
-                    </SheetClose>
-                     <SheetClose asChild>
-                        <Button variant="outline" asChild className="w-full justify-start gap-3">
-                            <Link href="/admin">
-                                <Shield className="h-5 w-5" />
-                                <span>Admin</span>
-                            </Link>
-                        </Button>
-                    </SheetClose>
-                    <Button variant="outline" onClick={handleLogout} className="w-full justify-start gap-3">
+                    <div className="grid grid-cols-3 gap-2">
+                        <SheetClose asChild>
+                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                <Link href="/profile">
+                                    <UserIcon className="h-5 w-5" />
+                                    <span>Perfil</span>
+                                </Link>
+                            </Button>
+                        </SheetClose>
+                         <SheetClose asChild>
+                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                <Link href="/favorites">
+                                    <Heart className="h-5 w-5" />
+                                    <span>Favoritos</span>
+                                </Link>
+                            </Button>
+                        </SheetClose>
+                         <SheetClose asChild>
+                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                <Link href="/admin">
+                                    <Shield className="h-5 w-5" />
+                                    <span>Admin</span>
+                                </Link>
+                            </Button>
+                        </SheetClose>
+                    </div>
+                    <Button variant="destructive" onClick={handleLogout} className="w-full justify-center gap-3">
                         <LogOut className="h-5 w-5" />
-                        <span>Salir</span>
+                        <span>Cerrar Sesión</span>
                     </Button>
                 </>
             ) : (
@@ -157,7 +160,7 @@ const AuthSectionMobile = () => {
                         <Button variant="outline" asChild className="w-full justify-start gap-3">
                             <Link href="/login">
                                 <LogIn className="h-5 w-5" />
-                                <span>Ingresar</span>
+                                <span>Login</span>
                             </Link>
                         </Button>
                     </SheetClose>
@@ -165,7 +168,7 @@ const AuthSectionMobile = () => {
                         <Button variant="outline" asChild className="w-full justify-start gap-3">
                             <Link href="/signup">
                                 <UserPlus className="h-5 w-5" />
-                                <span>Registrarme</span>
+                                <span>Sign Up</span>
                             </Link>
                         </Button>
                     </SheetClose>
