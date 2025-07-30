@@ -1,18 +1,55 @@
-import Link from 'next/link';
-import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet } from 'lucide-react';
-import { Logo } from './LogoSvg';
 
+// src/components/Footer.tsx
+"use client";
+
+import Link from 'next/link';
+import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet, Share2 } from 'lucide-react';
+import { Logo } from './LogoSvg';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Footer() {
+  const { toast } = useToast();
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Arte Nativo Estampados',
+      text: '¡Descubre productos personalizados únicos en Arte Nativo!',
+      url: window.location.origin,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        throw new Error('Web Share API not supported');
+      }
+    } catch (err) {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: '¡Enlace Copiado!',
+          description: 'El enlace a la tienda ha sido copiado a tu portapapeles.',
+        });
+      } catch (copyErr) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'No se pudo compartir ni copiar el enlace.',
+        });
+      }
+    }
+  };
+
+
   return (
     <footer className="bg-accent text-accent-foreground mt-auto">
       <div className="container mx-auto py-12 px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           
           {/* Columna Logo y Creado por */}
-          <div className="flex flex-col items-center md:items-center text-center md:text-left md:col-span-1 lg:col-span-2">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left md:col-span-1 lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <Logo className="h-10 w-auto text-primary mb-10" />
+              <Logo className="h-auto w-36" />
             </div>
             
             <p className="text-sm mt-4 text-white/80">
@@ -61,22 +98,22 @@ export default function Footer() {
           {/* Columna Medios de Pago */}
           <div className="text-center md:text-left">
             <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
-            <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col items-start text-center text-white/80">
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+                <div className="flex flex-col items-center md:items-start text-white/80">
                     <Banknote className="h-8 w-8 mb-1"/>
                     <span className="text-xs">Efectivo</span>
                 </div>
-                <div className="flex flex-col items-start text-center text-white/80">
+                <div className="flex flex-col items-center md:items-start text-white/80">
                     <Landmark className="h-8 w-8 mb-1"/>
                     <span className="text-xs">Transferencia</span>
                 </div>
-                <div className="flex flex-col items-start text-center text-white/80">
+                <div className="flex flex-col items-center md:items-start text-white/80">
                     <CreditCard className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Crédito/Débito</span>
+                    <span className="text-xs">Crédito</span>
                 </div>
-                <div className="flex flex-col items-start text-center text-white/80">
+                <div className="flex flex-col items-center md:items-start text-white/80">
                     <Wallet className="h-8 w-8 mb-1"/>
-                    <span className="text-xs">Billetera Virtual</span>
+                    <span className="text-xs">Débito</span>
                 </div>
             </div>
           </div>
@@ -93,6 +130,9 @@ export default function Footer() {
               href="https://www.instagram.com/artenativoremeras/?hl=es-la" aria-label="Instagram" className="text-white/80 hover:text-secondary">
                 <Instagram className="h-6 w-6" />
               </Link>
+              <button onClick={handleShare} aria-label="Share page" className="text-white/80 hover:text-secondary">
+                <Share2 className="h-6 w-6" />
+              </button>
             </div>
           </div>
 
