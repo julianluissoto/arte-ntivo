@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -88,6 +88,12 @@ const UserAuthSection = () => {
                 <Link href="/admin">
                     <Shield className="h-5 w-5" />
                     <span>Admin</span>
+                    </Link>
+            </Button>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                <Link href="/admin/news">
+                    <Newspaper className="h-5 w-5" />
+                    <span>Admin Novedades</span>
                 </Link>
             </Button>
             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
@@ -115,7 +121,7 @@ const UserAuthSection = () => {
 
 export const CategorySidebarSkeleton = () => {
     return (
-        <aside className="hidden md:flex flex-col w-64 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
+        <aside className="hidden md:flex flex-col w-72 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
             <div className="flex justify-center mb-10">
                 <Skeleton className="h-12 w-32" />
             </div>
@@ -150,10 +156,10 @@ export default function CategorySidebar() {
     const currentCategory = searchParams.get('category') ?? 'Todos';
 
     return (
-        <aside className="hidden md:flex flex-col w-64 bg-card border-r h-screen sticky top-0">
-            <div className="p-4 flex justify-center">
+        <aside className="hidden md:flex flex-col w-72 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
+            <div className="flex justify-center mb-10">
                 <Link href="/" className="inline-flex items-center">
-                    <Logo className="h-12 w-auto mb-10" />
+                    <Logo className="h-12 w-auto" />
                 </Link>
             </div>
             
@@ -173,7 +179,7 @@ export default function CategorySidebar() {
                 ))}
             </nav>
             <Separator />
-            <div className="p-4 space-y-2 flex-grow overflow-y-auto">
+            <div className="p-4 space-y-2 flex-grow">
                 <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Categorías</h3>
                 {categories.map(({ name, icon: Icon }) => (
                     <Button

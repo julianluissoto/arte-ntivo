@@ -184,18 +184,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 <div
                     className={cn(
-                        "absolute bottom-2 right-2 rounded-full h-24 w-24 flex flex-col items-center justify-center text-center p-1 shadow-lg z-10",
+                       "absolute bottom-2 right-2 rounded-full flex flex-col items-center justify-center text-center p-1 shadow-lg z-10",
+                        "h-16 w-16 md:h-24 md:w-24", // Smaller on mobile, larger on desktop
                         product.disponible === false ? 'bg-red-600 text-primary-foreground' : 'bg-primary/90 text-primary-foreground'
                     )}
                 >
                     {product.disponible === false ? (
                         <>
-                            <span className="text-md font-semibold leading-tight">Sin</span>
-                            <span className="text-md font-semibold leading-tight">Stock</span>
+                        <span className="text-sm md:text-md font-semibold leading-tight">Sin</span>
+                         <span className="text-sm md:text-md font-semibold leading-tight">Stock</span>
                         </>
                     ) : (
                         <>
-                            <div className="text-2xl font-bold leading-tight">{product.price}</div>
+                            <div className="text-l md:text-2xl font-bold leading-tight">{product.price}</div>
                         </>
                     )}
                 </div>
@@ -203,7 +204,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
                 <CardContent className="p-4 flex-grow flex flex-col">
                     <CardTitle className="text-lg font-medium">{product.title}</CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground mt-1">{product.category}</CardDescription>
                 </CardContent>
             </Link>
         </Card>

@@ -49,3 +49,12 @@ export interface Customer {
     displayName: string | null;
     photoURL?: string | null;
 }
+
+export interface News {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  hint: string;
+  createdAt: string; // Changed to string to be serializable
+}

@@ -1,12 +1,14 @@
 // app/page.tsx
 import ProductCard from "@/components/ProductCard";
 import ProductCarousel from "@/components/ProductCarousel";
-import { getProducts, getReviews } from "@/lib/data"; // Tus funciones de Firestore
-import type { Category, Product, Review } from "@/lib/types"; // Importa Review
+import { getNews, getProducts, getReviews } from "@/lib/data"; // Tus funciones de Firestore
+import type { Category, News, Product, Review } from "@/lib/types"; // Importa Review
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import CustomerReviews from "@/components/CustomerReviews";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import Ticker from "@/components/Ticker";
+import NewsCard from "@/components/NewsCard";
+import { Heading } from "lucide-react";
 
 interface HomeProps {
   searchParams?: {
@@ -26,6 +28,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   const allProducts: Product[] = await getProducts();
   const reviews: Review[] = await getReviews(); // Usando Review
+   const allNews: News[] = await getNews();
 
   const filteredProductsByCategory =
     selectedCategory === "Todos"
@@ -37,10 +40,16 @@ export default async function Home({ searchParams }: HomeProps) {
   const productsForCurrentPage = filteredProductsByCategory.slice(offset, offset + PRODUCTS_PER_PAGE);
 
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
-const tickerMessages = [
+const tickerMessages1 = [
     "¡Aprovecha las promos por cantidad en stickers!",
     "Recibimos todos los medios de pago",
     "12 años de experiencia"
+  ];
+
+  const tickerMessages2 = [
+    "Descuento por cantidad",
+    "Planes especiales para colegios e instituciones",
+    "Todo tipo de estampas y stickers personalizados"
   ];
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
@@ -50,7 +59,7 @@ const tickerMessages = [
 
   return (
     <div className="space-y-12">
-      <Ticker messages={tickerMessages} direccion="izq" />
+      <Ticker messages={tickerMessages1} direccion="izq" />
       {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
         <section>
           <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
@@ -61,7 +70,7 @@ const tickerMessages = [
           </div>
         </section>
       )}
-      <Ticker  messages={tickerMessages} direccion ="der" />
+      <Ticker  messages={tickerMessages2} direccion ="der" />
 
       <section>
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
@@ -71,7 +80,7 @@ const tickerMessages = [
         </div>
 
         {productsForCurrentPage.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {productsForCurrentPage.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -125,6 +134,21 @@ const tickerMessages = [
           </div>
 
           <CustomerReviews />
+          {/* Nueva sección de Novedades */}
+         {allNews.length > 0 ?(
+            <div>
+              <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+                Novedades
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {allNews.map((newsItem) => (
+                  <NewsCard key={newsItem.id} news={newsItem} />
+                ))}
+              </div>
+            </div>
+          ): <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+                Sin Novedades por el momento
+              </h2>}
 
         </section>
       )}

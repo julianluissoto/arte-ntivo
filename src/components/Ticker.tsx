@@ -19,7 +19,7 @@ const TickerContent = ({ messages }: TickerProps) => (
   </div>
 );
 
-export default function Ticker({ messages, direccion = "izq" }: TickerProps) {
+export default function Ticker({ messages,direccion}: TickerProps) {
   const fullMessages = [...messages, ...messages, ...messages, ...messages]; // Repeat messages to ensure continuous scrolling
 
   // Determine animation class based on 'direccion' prop

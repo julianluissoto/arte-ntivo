@@ -1,5 +1,5 @@
 // src/lib/data.ts
-import { Product, Review, Customer } from './types';
+import { Product, Review, Customer, News } from './types';
 import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from 'firebase/auth';
@@ -118,6 +118,46 @@ export async function getReviews(): Promise<Review[]> {
 
     } catch (error) {
         console.error("❌ Error al obtener las reseñas:", error);
+        return [];
+    }
+    
+}
+
+export async function addNews(news: Omit<News, 'id' | 'createdAt'>) {
+    try {
+        await addDoc(collection(db, 'news'), {
+            ...news,
+            createdAt: serverTimestamp(),
+        });
+    } catch (error) {
+        console.error("❌ Error al añadir la novedad:", error);
+        throw new Error("No se pudo enviar la novedad");
+    }
+}
+
+export async function getNews(): Promise<News[]> {
+    try {
+        const newsCollection = collection(db, "news");
+        const q = query(newsCollection, orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        return snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const createdAt = data.createdAt as Timestamp;
+
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: createdAt ? createdAt.toDate().toISOString() : new Date().toISOString(),
+            } as News;
+        });
+
+    } catch (error) {
+        console.error("❌ Error al obtener las novedades:", error);
         return [];
     }
 }
