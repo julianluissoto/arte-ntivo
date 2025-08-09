@@ -1,14 +1,14 @@
-// app/page.tsx
+// src/app/page.tsx
 import ProductCard from "@/components/ProductCard";
 import ProductCarousel from "@/components/ProductCarousel";
-import { getNews, getProducts, getReviews } from "@/lib/data"; // Tus funciones de Firestore
-import type { Category, News, Product, Review } from "@/lib/types"; // Importa Review
+import { getProducts, getReviews, getNews } from "@/lib/data"; // Tus funciones de Firestore
+import type { Category, Product, Review, News } from "@/lib/types"; // Importa Review y News
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import CustomerReviews from "@/components/CustomerReviews";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import Ticker from "@/components/Ticker";
-import NewsCard from "@/components/NewsCard";
-import { Heading } from "lucide-react";
+import NewsCard from "@/components/NewsCard"; // Importar la nueva tarjeta
+import HeroSection from "@/components/HeroSection"; // Importar el nuevo componente
 
 interface HomeProps {
   searchParams?: {
@@ -27,8 +27,8 @@ export default async function Home({ searchParams }: HomeProps) {
   const currentPage = Number(searchParams?.page ?? 1);
 
   const allProducts: Product[] = await getProducts();
-  const reviews: Review[] = await getReviews(); // Usando Review
-   const allNews: News[] = await getNews();
+  const reviews: Review[] = await getReviews();
+  const allNews: News[] = await getNews();
 
   const filteredProductsByCategory =
     selectedCategory === "Todos"
@@ -40,17 +40,20 @@ export default async function Home({ searchParams }: HomeProps) {
   const productsForCurrentPage = filteredProductsByCategory.slice(offset, offset + PRODUCTS_PER_PAGE);
 
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
-const tickerMessages1 = [
+  
+  const tickerMessages1 = [
     "¡Aprovecha las promos por cantidad en stickers!",
     "Recibimos todos los medios de pago",
     "12 años de experiencia"
   ];
-
+  
   const tickerMessages2 = [
     "Descuento por cantidad",
     "Planes especiales para colegios e instituciones",
     "Todo tipo de estampas y stickers personalizados"
   ];
+
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNumber.toString());
@@ -59,7 +62,12 @@ const tickerMessages1 = [
 
   return (
     <div className="space-y-12">
+      {selectedCategory === 'Todos' && currentPage === 1 && (
+        <HeroSection />
+      )}
+
       <Ticker messages={tickerMessages1} direccion="izq" />
+      
       {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
         <section>
           <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
@@ -70,9 +78,10 @@ const tickerMessages1 = [
           </div>
         </section>
       )}
-      <Ticker  messages={tickerMessages2} direccion ="der" />
 
-      <section>
+      <Ticker messages={tickerMessages2} direccion="der" />
+
+       <section id="all-products">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
           <h2 className="text-3xl font-bold font-headline text-primary">
             {selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}
@@ -134,8 +143,9 @@ const tickerMessages1 = [
           </div>
 
           <CustomerReviews />
+
           {/* Nueva sección de Novedades */}
-         {allNews.length > 0 ?(
+          {allNews.length > 0 && (
             <div>
               <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
                 Novedades
@@ -146,9 +156,7 @@ const tickerMessages1 = [
                 ))}
               </div>
             </div>
-          ): <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-                Sin Novedades por el momento
-              </h2>}
+          )}
 
         </section>
       )}
