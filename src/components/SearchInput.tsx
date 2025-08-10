@@ -26,14 +26,14 @@ export default function SearchInput() {
       <Input
         type="search"
         placeholder="Buscar productos..."
-        className="w-full pr-10"
+        className="w-full pr-10 pl-10"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleKeyDown}
       />
       <button
         onClick={handleSearch}
-        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-primary"
+        className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground hover:text-primary"
         aria-label="Buscar"
       >
         <Search className="h-5 w-5" />

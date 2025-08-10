@@ -58,3 +58,6 @@ export interface News {
   hint: string;
   createdAt: string; // Changed to string to be serializable
 }
+export interface CartItem extends Product {
+  quantity: number;
+}

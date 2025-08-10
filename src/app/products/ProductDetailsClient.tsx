@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Brush, Minus, Plus, Edit } from 'lucide-react';
+import { Brush, Minus, Plus, Edit, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
+import { useCart } from '@/hooks/useCart';
+import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import EditProductForm from '@/components/EditProductForm';
 
@@ -22,6 +24,8 @@ interface ProductDetailsClientProps {
 
 export default function ProductDetailsClient({ product }: ProductDetailsClientProps) {
   const { user } = useAuth();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(product.options?.colors?.[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.options?.sizes?.[0]);
@@ -41,6 +45,22 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
     setQuantity(prev => Math.max(1, prev + amount));
   };
   
+  const handleAddToCart = () => {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Debes iniciar sesión",
+            description: "Para agregar productos al carrito, primero debes iniciar sesión.",
+        });
+        return;
+    }
+    addToCart(product, quantity);
+    toast({
+        title: "¡Producto agregado!",
+        description: `${product.title} (x${quantity}) se ha añadido a tu carrito.`,
+    });
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="grid md:grid-cols-2 gap-12 items-start">
@@ -185,15 +205,18 @@ export default function ProductDetailsClient({ product }: ProductDetailsClientPr
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button size="lg" className="w-full" disabled={product.disponible === false}>Agregar al Carrito</Button>
-            {product.disponible !== false && (
+            <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={product.disponible === false}>
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Agregar al Carrito
+            </Button>
+            {/* {product.disponible !== false && (
                 <Button size="lg" variant="outline" className="w-full" asChild>
                     <Link href="/crear">
                         <Brush className="mr-2 h-5 w-5" />
                         Personalizar
                     </Link>
                 </Button>
-            )}
+            )} */}
           </div>
         </div>
       </div>

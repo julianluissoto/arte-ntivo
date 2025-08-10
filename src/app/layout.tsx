@@ -11,7 +11,8 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import CategorySidebar, { CategorySidebarSkeleton } from '@/components/CategorySidebar';
 import { AuthProvider } from '@/hooks/useAuth';
-import { FavoritesProvider } from '@/hooks/useFavorites'; // Import FavoritesProvider
+import { FavoritesProvider } from '@/hooks/useFavorites';
+import { CartProvider } from '@/hooks/useCart';
 import { Suspense } from 'react';
 import ChatPopup from '@/components/ChatPopup';
 
@@ -35,24 +36,26 @@ export default function RootLayout({
       <body className="font-body antialiased bg-muted">
         <AuthProvider>
           <FavoritesProvider>
-            <div className="max-w-screen-2xl mx-auto border-x shadow-2xl">
-              <div className="flex min-h-screen bg-background">
-                <Suspense fallback={<CategorySidebarSkeleton />}>
-                  <CategorySidebar />
-                </Suspense>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <Header />
-                  <main className="flex-grow p-4 md:p-8">
-                    {children}
-                  </main>
-                  <Footer />
+            <CartProvider>
+              <div className="max-w-screen-2xl mx-auto border-x shadow-2xl">
+                <div className="flex min-h-screen bg-background">
+                  <Suspense fallback={<CategorySidebarSkeleton />}>
+                    <CategorySidebar />
+                  </Suspense>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <Header />
+                    <main className="flex-grow p-4 md:p-8">
+                      {children}
+                    </main>
+                    <Footer />
+                  </div>
                 </div>
               </div>
-            </div>
-            <WhatsAppButton />
-            <ChatPopup />
-            <ScrollToTopButton />
-            <Toaster />
+              <WhatsAppButton />
+              <ChatPopup />
+              <ScrollToTopButton />
+              <Toaster />
+            </CartProvider>
           </FavoritesProvider>
         </AuthProvider>
       </body>

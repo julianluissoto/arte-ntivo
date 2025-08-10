@@ -1,5 +1,5 @@
 // src/lib/data.ts
-import { Product, Review, Customer, News } from './types';
+import { Product, Review, Customer, News, CartItem } from './types';
 import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from 'firebase/auth';
@@ -160,4 +160,30 @@ export async function getNews(): Promise<News[]> {
         console.error("❌ Error al obtener las novedades:", error);
         return [];
     }
+    
 }
+
+
+export async function saveUserCart(userId: string, cartItems: CartItem[]) {
+  try {
+    const cartRef = doc(db, 'carts', userId);
+    await setDoc(cartRef, { items: cartItems, updatedAt: serverTimestamp() }, { merge: true });
+  } catch (error) {
+    console.error('❌ Error saving user cart to Firestore:', error);
+  }
+}
+
+export async function getUserCart(userId: string): Promise<CartItem[]> {
+  try {
+    const cartRef = doc(db, 'carts', userId);
+    const cartSnap = await getDoc(cartRef);
+    if (cartSnap.exists()) {
+      return cartSnap.data().items as CartItem[];
+    }
+    return [];
+  } catch (error) {
+    console.error('❌ Error fetching user cart from Firestore:', error);
+    return [];
+  }
+}
+

@@ -1,4 +1,3 @@
-
 // src/components/Header.tsx
 "use client";
 
@@ -21,6 +20,9 @@ import {
   User as UserIcon,
   Shield,
   X,
+  Newspaper,
+  Sparkles,
+  ShoppingCart,
 } from "lucide-react";
 
 import * as React from "react";
@@ -34,12 +36,14 @@ import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { Logo } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import SearchInput from "./SearchInput";
+import { Badge } from "./ui/badge";
 
 const categories: { name: Category; icon: React.ElementType }[] = [
   { name: "Todos", icon: Layers },
@@ -75,6 +79,14 @@ const NavLinks = ({
           </Link>
         </Button>
       </SheetClose>
+      <SheetClose asChild>
+        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium gap-3">
+            <Link href="/generate-description" onClick={onSelect}>
+                <Sparkles className="h-5 w-5" />
+                <span>Generar Descripción</span>
+            </Link>
+        </Button>
+      </SheetClose>
     </>
   );
 };
@@ -98,6 +110,7 @@ const CategoryLinks = ({ onSelect }: { onSelect?: () => void }) => {
 
 const AuthSectionMobile = () => {
     const { user, loading } = useAuth();
+    const { cartItems } = useCart();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -133,6 +146,17 @@ const AuthSectionMobile = () => {
                             </Button>
                         </SheetClose>
                          <SheetClose asChild>
+                            <Button variant="outline" asChild className="relative w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                <Link href="/cart">
+                                    <ShoppingCart className="h-5 w-5" />
+                                    <span>Carrito</span>
+                                    {cartItems.length > 0 && (
+                                      <Badge className="absolute -top-1 -right-1 h-4 w-4 justify-center p-0">{cartItems.length}</Badge>
+                                    )}
+                                </Link>
+                            </Button>
+                        </SheetClose>
+                         <SheetClose asChild>
                             <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
                                 <Link href="/favorites">
                                     <Heart className="h-5 w-5" />
@@ -144,7 +168,15 @@ const AuthSectionMobile = () => {
                             <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
                                 <Link href="/admin">
                                     <Shield className="h-5 w-5" />
-                                    <span>Admin</span>
+                                    <span>Admin Prod.</span>
+                                </Link>
+                            </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                <Link href="/admin/news">
+                                    <Newspaper className="h-5 w-5" />
+                                    <span>Admin Nov.</span>
                                 </Link>
                             </Button>
                         </SheetClose>

@@ -67,7 +67,7 @@ function SearchResults() {
       </section>
 
       <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground" />
+          
           <Input
             type="text"
             placeholder="Buscar por nombre, descripción, categoría..."
@@ -75,6 +75,7 @@ function SearchResults() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          
           {searchTerm && (
               <Button
                   variant="ghost"

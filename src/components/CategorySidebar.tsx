@@ -3,18 +3,21 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper, Sparkles, ShoppingCart, Home } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Logo } from "./LogoSvg";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import SearchInput from "./SearchInput";
+import { Badge } from "./ui/badge";
+
 
 const categories: { name: Category; icon: React.ElementType }[] = [
     { name: 'Todos', icon: Layers },
@@ -29,12 +32,14 @@ const categories: { name: Category; icon: React.ElementType }[] = [
 ];
 
 const mainNavLinks = [
-    { href: "/", label: "Home" },
+    { href: "/", label: "Home", icon: Home },
     { href: "/crear", label: "Personalizar", icon: Brush },
+    { href: "/generate-description", label: "Generar Descripción", icon: Sparkles }
 ];
 
 const UserAuthSection = () => {
     const { user, loading } = useAuth();
+    const { cartItems } = useCart();
     const router = useRouter();
     const { toast } = useToast();
 
@@ -77,19 +82,29 @@ const UserAuthSection = () => {
                     <span>Mi Perfil</span>
                 </Link>
             </Button>
+            <Button variant="ghost" asChild className="w-full justify-start gap-3 relative">
+                <Link href="/cart">
+                    <ShoppingCart className="h-5 w-5" />
+                    <span>Carrito</span>
+                    {cartItems.length > 0 && (
+                        <Badge className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 justify-center p-0">{cartItems.length}</Badge>
+                    )}
+                </Link>
+            </Button>
             <Button variant="ghost" asChild className="w-full justify-start gap-3">
                 <Link href="/favorites">
                     <Heart className="h-5 w-5" />
                     <span>Favoritos</span>
                 </Link>
             </Button>
-             {/* Enlace al panel de administración */}
+             {/* Enlace al panel de administración de productos */}
             <Button variant="ghost" asChild className="w-full justify-start gap-3">
                 <Link href="/admin">
                     <Shield className="h-5 w-5" />
-                    <span>Admin</span>
-                    </Link>
+                    <span>Admin Productos</span>
+                </Link>
             </Button>
+            {/* Enlace al panel de administración de novedades */}
             <Button variant="ghost" asChild className="w-full justify-start gap-3">
                 <Link href="/admin/news">
                     <Newspaper className="h-5 w-5" />
@@ -129,6 +144,7 @@ export const CategorySidebarSkeleton = () => {
                 <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
+                 <Skeleton className="h-10 w-full" />
             </div>
             <Separator />
             <div className="flex-grow space-y-2">
