@@ -7,7 +7,7 @@ import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Logo } from "./LogoSvg";
+import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { auth } from "@/lib/firebase";
@@ -38,7 +38,7 @@ const mainNavLinks = [
 ];
 
 const UserAuthSection = () => {
-    const { user, loading } = useAuth();
+    const { user, isAdmin, loading } = useAuth();
     const { cartItems } = useCart();
     const router = useRouter();
     const { toast } = useToast();
@@ -97,20 +97,24 @@ const UserAuthSection = () => {
                     <span>Favoritos</span>
                 </Link>
             </Button>
-             {/* Enlace al panel de administración de productos */}
-            <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                <Link href="/admin">
-                    <Shield className="h-5 w-5" />
-                    <span>Admin Productos</span>
-                </Link>
-            </Button>
-            {/* Enlace al panel de administración de novedades */}
-            <Button variant="ghost" asChild className="w-full justify-start gap-3">
-                <Link href="/admin/news">
-                    <Newspaper className="h-5 w-5" />
-                    <span>Admin Novedades</span>
-                </Link>
-            </Button>
+             {isAdmin && (
+                <>
+                    {/* Enlace al panel de administración de productos */}
+                    <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                        <Link href="/admin">
+                            <Shield className="h-5 w-5" />
+                            <span>Admin Productos</span>
+                        </Link>
+                    </Button>
+                    {/* Enlace al panel de administración de novedades */}
+                    <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                        <Link href="/admin/news">
+                            <Newspaper className="h-5 w-5" />
+                            <span>Admin Novedades</span>
+                        </Link>
+                    </Button>
+                </>
+             )}
             <Button variant="ghost" onClick={handleLogout} className="w-full justify-start gap-3">
                 <LogOut className="h-5 w-5" />
                 <span>Salir</span>

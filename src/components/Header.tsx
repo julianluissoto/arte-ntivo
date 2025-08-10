@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
-import { Logo } from "./LogoSvg";
+import { Logo } from "./Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { auth } from "@/lib/firebase";
@@ -109,7 +109,7 @@ const CategoryLinks = ({ onSelect }: { onSelect?: () => void }) => {
 };
 
 const AuthSectionMobile = () => {
-    const { user, loading } = useAuth();
+    const { user, isAdmin, loading } = useAuth();
     const { cartItems } = useCart();
     const router = useRouter();
     const { toast } = useToast();
@@ -164,22 +164,26 @@ const AuthSectionMobile = () => {
                                 </Link>
                             </Button>
                         </SheetClose>
-                         <SheetClose asChild>
-                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
-                                <Link href="/admin">
-                                    <Shield className="h-5 w-5" />
-                                    <span>Admin Prod.</span>
-                                </Link>
-                            </Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                            <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
-                                <Link href="/admin/news">
-                                    <Newspaper className="h-5 w-5" />
-                                    <span>Admin Nov.</span>
-                                </Link>
-                            </Button>
-                        </SheetClose>
+                        {isAdmin && (
+                            <>
+                                <SheetClose asChild>
+                                    <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                        <Link href="/admin">
+                                            <Shield className="h-5 w-5" />
+                                            <span>Admin Prod.</span>
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+                                <SheetClose asChild>
+                                    <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                        <Link href="/admin/news">
+                                            <Newspaper className="h-5 w-5" />
+                                            <span>Admin Nov.</span>
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+                            </>
+                        )}
                     </div>
                     <Button variant="destructive" onClick={handleLogout} className="w-full justify-center gap-3">
                         <LogOut className="h-5 w-5" />
