@@ -187,3 +187,14 @@ export async function getUserCart(userId: string): Promise<CartItem[]> {
   }
 }
 
+export async function isUserAdmin(userId: string): Promise<boolean> {
+  try {
+    const adminDocRef = doc(db, 'admins', userId);
+    const adminDocSnap = await getDoc(adminDocRef);
+    // Returns true if the document exists, false otherwise
+    return adminDocSnap.exists();
+  } catch (error) {
+    console.error('❌ Error checking admin status:', error);
+    return false; // Default to false in case of error
+  }
+}

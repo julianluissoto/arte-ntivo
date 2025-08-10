@@ -8,11 +8,39 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, Loader2 } from 'lucide-react';
+import { UploadCloud, Loader2, ShieldAlert } from 'lucide-react';
 import { addNews } from '@/lib/data';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const AdminNewsSkeleton = () => (
+    <div className="max-w-2xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-3/4 mx-auto" />
+            <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <div className="pt-4 border-t">
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+);
+
 
 export default function AdminNewsPage() {
+    const { user, isAdmin, loading: authLoading } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [imageUrl, setImageUrl] = useState('');
@@ -70,6 +98,21 @@ export default function AdminNewsPage() {
             setIsLoading(false);
         }
     };
+
+    if (authLoading) {
+        return <AdminNewsSkeleton />;
+    }
+
+    if (!user || !isAdmin) {
+        return (
+            <div className="text-center py-20 bg-card rounded-lg border border-dashed">
+                <ShieldAlert className="h-16 w-16 text-destructive mx-auto mb-4" />
+                <h2 className="text-2xl font-bold font-headline text-destructive">Acceso Denegado</h2>
+                <p className="text-muted-foreground mt-2 mb-6">No tienes permiso para ver esta página.</p>
+                <Button onClick={() => router.push('/')}>Volver al Inicio</Button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto space-y-8">

@@ -1,4 +1,3 @@
-
 // src/app/admin/page.tsx
 "use client";
 
@@ -11,11 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, Loader2, PlusCircle, Trash2 } from 'lucide-react';
+import { UploadCloud, Loader2, PlusCircle, Trash2, ShieldAlert } from 'lucide-react';
 import type { Category } from '@/lib/types';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const categories: Category[] = [
     "Indumentaria",
@@ -29,7 +30,34 @@ const categories: Category[] = [
     "Goma",
 ];
 
+const AdminSkeleton = () => (
+    <div className="max-w-2xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+            <Skeleton className="h-12 w-3/4 mx-auto" />
+            <Skeleton className="h-6 w-1/2 mx-auto" />
+        </div>
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-4 w-2/3" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <div className="grid grid-cols-2 gap-6">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+            </CardContent>
+        </Card>
+    </div>
+);
+
+
 export default function AdminPage() {
+    const { user, isAdmin, loading: authLoading } = useAuth();
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -115,6 +143,21 @@ export default function AdminPage() {
             setIsLoading(false);
         }
     };
+
+    if (authLoading) {
+        return <AdminSkeleton />;
+    }
+
+    if (!user || !isAdmin) {
+        return (
+            <div className="text-center py-20 bg-card rounded-lg border border-dashed">
+                <ShieldAlert className="h-16 w-16 text-destructive mx-auto mb-4" />
+                <h2 className="text-2xl font-bold font-headline text-destructive">Acceso Denegado</h2>
+                <p className="text-muted-foreground mt-2 mb-6">No tienes permiso para ver esta página.</p>
+                <Button onClick={() => router.push('/')}>Volver al Inicio</Button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto space-y-8">
