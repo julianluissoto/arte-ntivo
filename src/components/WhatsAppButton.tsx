@@ -1,5 +1,5 @@
 import Link from 'next/link';
-
+export const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPPNUMBER || "";
 const WhatsAppIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg"
 aria-label="WhatsApp" role="img"
@@ -10,7 +10,7 @@ fill="#25d366"/><path fill="#25d366" stroke="#ffffff" stroke-width="26" d="M123 
 );
 
 export default function WhatsAppButton() {
-  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPPNUMBER || "";
+
   const message = "Hola! Quisiera más información sobre sus productos personalizados.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 

@@ -9,17 +9,33 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Minus, Plus, Trash2, ShoppingCart, MessageCircle, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-
+import { phoneNumber } from '@/components/WhatsAppButton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function CartPage() {
   const { user, loading: authLoading } = useAuth();
   const { cartItems, removeFromCart, updateQuantity, clearCart, getCartTotal, loading: cartLoading } = useCart();
 
-  const handleCheckout = () => {
+  const handleConfirmCheckout = () => {
     const productTitles = cartItems.map(item => `${item.title} (x${item.quantity})`).join(', ');
     const message = `¡Hola! Me gustaría hacer un pedido de los siguientes productos: ${productTitles}.`;
-    const whatsappUrl = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPPNUMBER}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Redirect to WhatsApp
     window.open(whatsappUrl, '_blank');
+    
+    // Clear the cart after redirecting
+    clearCart();
   };
 
   const isLoading = authLoading || cartLoading;
@@ -103,10 +119,29 @@ export default function CartPage() {
               <span>${getCartTotal()}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
-                <Button size="lg" className="w-full" onClick={handleCheckout}>
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Finalizar por WhatsApp
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="lg" className="w-full">
+                      <MessageCircle className="mr-2 h-5 w-5" />
+                      Finalizar por WhatsApp
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás a punto de ir a WhatsApp</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Nos enviarás un mensaje por WhatsApp con los productos seleccionados para acordar el pago y la entrega directamente con nosotros.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleConfirmCheckout}>
+                        Continuar y Enviar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
                 <Button size="lg" variant="destructive" className="w-full" onClick={clearCart}>
                     <Trash2 className="mr-2 h-5 w-5" />
                     Vaciar Carrito
