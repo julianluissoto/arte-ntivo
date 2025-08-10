@@ -4,8 +4,7 @@
 
 import Link from 'next/link';
 import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet, Share2 } from 'lucide-react';
-import { Logo } from './LogoSvg';
-import { useToast } from '@/hooks/use-toast';
+import { Logo } from './Logo';
 import { useShare } from '@/hooks/use-share';
 
 export default function Footer() {
