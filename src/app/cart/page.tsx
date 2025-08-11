@@ -80,16 +80,16 @@ export default function CartPage() {
             <div className="space-y-4">
               {cartItems.map(item => (
                 <div key={item.id} className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted">
+                  <div className="flex items-center gap-4 flex-grow min-w-0">
+                    <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
                         <Image src={Array.isArray(item.images) ? item.images[0] : item.images} alt={item.title} fill className="object-cover" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{item.title}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold truncate">{item.title}</h3>
                       <p className="text-sm text-muted-foreground">{item.price}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 flex-shrink-0">
                      <div className="flex items-center border rounded-md">
                         <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                             <Minus className="h-4 w-4" />
