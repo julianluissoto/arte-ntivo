@@ -176,48 +176,54 @@ export default function CategorySidebar() {
     const currentCategory = searchParams.get('category') ?? 'Todos';
 
     return (
-        <aside className="hidden md:flex flex-col w-72 bg-card border-r h-screen sticky top-0 p-4 space-y-4">
-            <div className="flex justify-center mb-10">
+        <aside className="hidden md:flex flex-col w-72 bg-card border-r h-screen sticky top-0 p-4">
+            <div className="flex justify-center mb-10 flex-shrink-0">
                 <Link href="/" className="inline-flex items-center">
                     <Logo className="h-12 w-auto" />
                 </Link>
             </div>
             
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 flex-shrink-0">
               <SearchInput />
             </div>
 
-            <nav className="pt-1 px-4 pb-4 space-y-2">
-                <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
-                {mainNavLinks.map(link => (
-                    <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} asChild className="w-full justify-start gap-3">
-                        <Link href={link.href}>
-                            {link.icon && <link.icon className="h-5 w-5" />}
-                            <span>{link.label}</span>
-                        </Link>
-                    </Button>
-                ))}
-            </nav>
-            <Separator />
-            <div className="p-4 space-y-2 flex-grow">
-                <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Categorías</h3>
-                {categories.map(({ name, icon: Icon }) => (
-                    <Button
-                        key={name}
-                        variant={currentCategory === name && pathname === '/' ? "secondary" : "ghost"}
-                        asChild
-                        className="w-full justify-start gap-3"
-                    >
-                        <Link href={`/?category=${name}`}>
-                            <Icon className="h-5 w-5" />
-                            <span>{name}</span>
-                        </Link>
-                    </Button>
-                ))}
+            {/* Scrollable Area */}
+            <div className="flex-grow overflow-y-auto no-scrollbar -mr-4 pr-4">
+                 <nav className="pt-1 px-4 pb-4 space-y-2">
+                    <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
+                    {mainNavLinks.map(link => (
+                        <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} asChild className="w-full justify-start gap-3">
+                            <Link href={link.href}>
+                                {link.icon && <link.icon className="h-5 w-5" />}
+                                <span>{link.label}</span>
+                            </Link>
+                        </Button>
+                    ))}
+                </nav>
+                <Separator />
+                <div className="p-4 space-y-2">
+                    <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Categorías</h3>
+                    {categories.map(({ name, icon: Icon }) => (
+                        <Button
+                            key={name}
+                            variant={currentCategory === name && pathname === '/' ? "secondary" : "ghost"}
+                            asChild
+                            className="w-full justify-start gap-3"
+                        >
+                            <Link href={`/?category=${name}`}>
+                                <Icon className="h-5 w-5" />
+                                <span>{name}</span>
+                            </Link>
+                        </Button>
+                    ))}
+                </div>
             </div>
-            <Separator />
-            <div className="p-4 space-y-2">
-                <UserAuthSection />
+
+            {/* Auth Section - stays at the bottom */}
+            <div className="flex-shrink-0 pt-4 border-t">
+                <div className="p-4 space-y-2">
+                    <UserAuthSection />
+                </div>
             </div>
         </aside>
     );

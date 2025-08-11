@@ -28,7 +28,7 @@ export default function Ticker({ messages,direccion}: TickerProps) {
 
   return (
     
-   <div className={`${direccion === 'izq' ? 'bg-primary' : 'bg-secondary'} text-primary-foreground relative flex w-full overflow-hidden py-2 shadow-md`}>
+   <div className={`${direccion === 'izq' ? 'bg-primary' : 'bg-secondary'} text-black relative flex w-full overflow-hidden py-2 shadow-md`}>
       <div className={`flex whitespace-nowrap items-center ${animationClass}`}>
         <TickerContent messages={fullMessages} />
         <TickerContent messages={fullMessages} />

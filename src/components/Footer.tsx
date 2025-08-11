@@ -24,13 +24,13 @@ export default function Footer() {
               <Logo className="h-auto w-36" />
             </div>
             
-            <p className="text-sm mt-4 text-white/80">
+            <p className="text-sm mt-4 text-black">
               © {new Date().getFullYear()} Arte Nativo. All rights reserved.
             </p>
 
-            <div className="mt-4 text-sm text-white/60">
+            <div className="mt-4 text-sm text-black">
               <p>
-                Creado por <span className="font-semibold text-white">Julián Soto</span>
+                Creado por <span className="font-semibold text-black">Julián Soto</span>
               </p>
               <div className="flex gap-4 mt-2">
                 <Link 
@@ -58,32 +58,32 @@ export default function Footer() {
 
           {/* Columna Navegación */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4 text-white">Navegación</h3>
-            <ul className="space-y-2 text-sm text-white/80">
-              <li><Link href="/" className="hover:text-secondary">Home</Link></li>
-              <li><Link href="/crear" className="hover:text-secondary">Personalizar</Link></li>
-              <li><Link href="/favorites" className="hover:text-secondary">Favoritos</Link></li>
-              <li><Link href="/login" className="hover:text-secondary">Login</Link></li>
+            <h3 className="font-bold text-lg mb-4 text-black">Navegación</h3>
+            <ul className="space-y-2 text-sm text-black">
+              <li><Link href="/" className="hover:text-secondary text-black">Home</Link></li>
+              <li><Link href="/crear" className="hover:text-secondary text-black">Personalizar</Link></li>
+              <li><Link href="/favorites" className="hover:text-secondary text-black">Favoritos</Link></li>
+              <li><Link href="/login" className="hover:text-secondary text-black">Login</Link></li>
             </ul>
           </div>
 
           {/* Columna Medios de Pago */}
           <div className="flex flex-col text-center md:text-left">
-              <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
+              <h3 className="font-bold text-lg mb-4  text-black">Medios de Pago</h3>
               <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col items-center md:items-start text-white/80">
+                  <div className="flex flex-col items-center md:items-start text-black" >
                       <Banknote className="h-8 w-8 mb-1"/>
                       <span className="text-xs">Efectivo</span>
                   </div>
-                  <div className="flex flex-col items-center md:items-start text-white/80">
+                  <div className="flex flex-col items-center md:items-start text-black">
                       <Landmark className="h-8 w-8 mb-1"/>
                       <span className="text-xs">Transferencia</span>
                   </div>
-                  <div className="flex flex-col items-center md:items-start text-white/80">
+                  <div className="flex flex-col items-center md:items-start text-black">
                       <CreditCard className="h-8 w-8 mb-1"/>
                       <span className="text-xs">Crédito</span>
                   </div>
-                  <div className="flex flex-col items-center md:items-start text-white/80">
+                  <div className="flex flex-col items-center md:items-start text-black">
                       <Wallet className="h-8 w-8 mb-1"/>
                       <span className="text-xs">Débito</span>
                   </div>
@@ -92,17 +92,17 @@ export default function Footer() {
 
           {/* Columna Seguinos */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4 text-white">Seguinos</h3>
+            <h3 className="font-bold text-lg mb-4 text-black">Seguinos</h3>
             <div className="flex justify-center md:justify-start gap-4">
-              <Link href="#" aria-label="Facebook" className="text-white/80 hover:text-secondary">
-                <Facebook className="h-6 w-6" />
+              <Link href="#" aria-label="Facebook" className="text-blackhover:text-secondary">
+                <Facebook className="h-6 w-6 text-black "  />
               </Link>
               <Link target='_blank'
               rel="noopener noreferrer"
-              href="https://www.instagram.com/artenativoremeras/?hl=es-la" aria-label="Instagram" className="text-white/80 hover:text-secondary">
+              href="https://www.instagram.com/artenativoremeras/?hl=es-la" aria-label="Instagram" className="text-black hover:text-secondary">
                 <Instagram className="h-6 w-6" />
               </Link>
-              <button onClick={()=>handleShare()} aria-label="Share page" className="text-white/80 hover:text-secondary">
+              <button onClick={()=>handleShare()} aria-label="Share page" className="text-black hover:text-secondary">
                 <Share2 className="h-6 w-6" />
               </button>
             </div>
