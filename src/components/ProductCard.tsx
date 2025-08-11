@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { Badge } from "./ui/badge";
 
 
 interface ProductCardProps {
@@ -176,6 +177,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </>
                     )}
                 </div>
+                 {product.salePrice && (
+                    <Badge variant="destructive" className="absolute top-2 left-2 z-10">OFERTA</Badge>
+                )}
 
                 <div
                     className={cn(
@@ -190,9 +194,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                          <span className="text-sm md:text-md font-semibold leading-tight">Stock</span>
                        </>
                     ) : (
-                        <>
+                        product.salePrice ? (
+                            <div className="flex flex-col">
+                                <span className="text-xl md:text-2xl font-bold text-destructive-foreground leading-tight">{product.salePrice}</span>
+                                <span className="text-sm md:text-base font-medium text-destructive-foreground/80 line-through leading-tight">{product.price}</span>
+                            </div>
+                        ) : (
                             <div className="text-xl md:text-2xl font-bold leading-tight">{product.price}</div>
-                        </>
+                        )
                     )}
                 </div>
             </CardHeader>

@@ -4,11 +4,21 @@ import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverT
 import { db } from "@/lib/firebase";
 import { User } from 'firebase/auth';
 
+export async function addProduct(productData: Omit<Product, 'id'>): Promise<string> {
+    try {
+        const docRef = await addDoc(collection(db, 'products'), productData);
+        return docRef.id;
+    } catch (error) {
+        console.error("❌ Error al añadir el producto:", error);
+        throw new Error("No se pudo añadir el producto");
+    }
+}
+
 export async function getProducts(): Promise<Product[]> {
   try {
     const productsCollection = collection(db, "products");
     const snapshot = await getDocs(productsCollection);
-
+    
     if (snapshot.empty) {
       console.log("No se encontraron productos en Firestore.");
       return [];
@@ -20,7 +30,7 @@ export async function getProducts(): Promise<Product[]> {
     } as Product));
 
     return firestoreProducts;
-
+    
   } catch (error) {
     console.error("❌ Error al obtener los productos:", error);
     return [];
@@ -36,7 +46,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() } as Product;
     }
-
+    
     console.log(`No se encontró ningún producto con el id: ${id}`);
     return null;
 
@@ -113,15 +123,16 @@ export async function getReviews(): Promise<Review[]> {
                 id: doc.id,
                 ...data,
                 createdAt: createdAt ? createdAt.toDate().toISOString() : new Date().toISOString(),
-            } as unknown as Review;
+            } as Review;
         });
 
     } catch (error) {
         console.error("❌ Error al obtener las reseñas:", error);
         return [];
     }
-    
 }
+
+// Functions for News
 
 export async function addNews(news: Omit<News, 'id' | 'createdAt'>) {
     try {
@@ -160,13 +171,40 @@ export async function getNews(): Promise<News[]> {
         console.error("❌ Error al obtener las novedades:", error);
         return [];
     }
-    
 }
 
+export async function getNewsById(id: string): Promise<News | null> {
+    try {
+        const docRef = doc(db, "news", id);
+        const docSnap = await getDoc(docRef);
 
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const createdAt = data.createdAt;
+            return {
+                id: docSnap.id,
+                ...data,
+                // Ensure createdAt is a string if it's a Timestamp
+                createdAt: createdAt?.toDate ? createdAt.toDate().toISOString() : createdAt
+            } as News;
+        }
+
+        console.log(`No se encontró ninguna noticia con el id: ${id}`);
+        return null;
+
+    } catch(error) {
+        console.error("❌ Error al obtener la noticia:", error);
+        return null;
+    }
+}
+
+// Functions for Cart
 export async function saveUserCart(userId: string, cartItems: CartItem[]) {
   try {
+    // Use doc(db, 'carts', userId) to create a reference with the user's ID
     const cartRef = doc(db, 'carts', userId);
+    // Use setDoc to create or overwrite the document with the specific ID.
+    // { merge: true } is crucial to prevent overwriting existing data if we only want to update.
     await setDoc(cartRef, { items: cartItems, updatedAt: serverTimestamp() }, { merge: true });
   } catch (error) {
     console.error('❌ Error saving user cart to Firestore:', error);
@@ -187,6 +225,7 @@ export async function getUserCart(userId: string): Promise<CartItem[]> {
   }
 }
 
+// Function to check if a user is an admin
 export async function isUserAdmin(userId: string): Promise<boolean> {
   try {
     const adminDocRef = doc(db, 'admins', userId);
@@ -198,3 +237,5 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
     return false; // Default to false in case of error
   }
 }
+
+    

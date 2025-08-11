@@ -1,4 +1,3 @@
-
 // src/components/EditProductForm.tsx
 "use client";
 
@@ -35,6 +34,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
     const [productName, setProductName] = useState(product.title);
     const [description, setDescription] = useState(product.description);
     const [price, setPrice] = useState(product.price.replace('$', ''));
+    const [salePrice, setSalePrice] = useState(product.salePrice?.replace('$', '') || '');
     const [category, setCategory] = useState<Category>(product.category);
     const [imageUrls, setImageUrls] = useState<string[]>(Array.isArray(product.images) ? product.images : [product.images]);
     const [hint, setHint] = useState(product.hint);
@@ -75,7 +75,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         setIsLoading(true);
 
         try {
-            const updatedProduct = {
+            const updatedProduct: Partial<Product> = {
                 title: productName,
                 price: `$${price}`,
                 category,
@@ -84,6 +84,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
                 hint,
                 disponible: isAvailable,
                 isFeatured,
+                salePrice: salePrice ? `$${salePrice}` : '', // Add or clear sale price
             };
             
             await updateProduct(product.id, updatedProduct);
@@ -96,7 +97,6 @@ export default function EditProductForm({ product }: EditProductFormProps) {
             router.refresh(); 
             
         } catch (error) {
-            console.error("Error updating document: ", error);
             toast({
                 variant: 'destructive',
                 title: 'Error al Actualizar',
@@ -132,7 +132,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label htmlFor="price">Precio</Label>
+                    <Label htmlFor="price">Precio Original</Label>
                     <Input
                         id="price"
                         type="number"
@@ -143,18 +143,29 @@ export default function EditProductForm({ product }: EditProductFormProps) {
                     />
                 </div>
                 <div className="space-y-2">
-                    <Label htmlFor="category">Categoría</Label>
-                    <Select onValueChange={(value: Category) => setCategory(value)} value={category} required>
-                        <SelectTrigger id="category">
-                            <SelectValue placeholder="Selecciona una categoría" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {categories.map(cat => (
-                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Label htmlFor="sale-price">Precio de Oferta (Opcional)</Label>
+                    <Input
+                        id="sale-price"
+                        type="number"
+                        value={salePrice}
+                        onChange={(e) => setSalePrice(e.target.value)}
+                        placeholder="Dejar vacío si no está en oferta"
+                    />
                 </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="category">Categoría</Label>
+                <Select onValueChange={(value: Category) => setCategory(value)} value={category} required>
+                    <SelectTrigger id="category">
+                        <SelectValue placeholder="Selecciona una categoría" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {categories.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="space-y-4">

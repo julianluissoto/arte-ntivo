@@ -2,49 +2,52 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { onAuthStateChanged, User, getAuth } from 'firebase/auth';
-import { app } from '@/lib/firebase'; // Import the initialized app
-import { isUserAdmin } from '@/lib/data'; // Import the admin check function
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { isUserAdmin } from '@/lib/data';
 
-interface AuthContextType {
+interface AuthState {
   user: User | null;
-  loading: boolean;
   isAdmin: boolean;
+  loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true, isAdmin: false });
+const initialAuthState: AuthState = {
+  user: null,
+  isAdmin: false,
+  loading: true,
+};
 
-// Get the Auth instance here
-const auth = getAuth(app);
+
+const AuthContext = createContext<AuthState>(initialAuthState);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  
+  const [authState, setAuthState] = useState<AuthState>(initialAuthState);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
       if (user) {
-        // If user is logged in, check their admin status
+       
         const adminStatus = await isUserAdmin(user.uid);
-        setIsAdmin(adminStatus);
+    
+        setAuthState({ user, isAdmin: adminStatus, loading: false });
       } else {
-        // If user is logged out, they are not an admin
-        setIsAdmin(false);
+       
+        setAuthState({ user: null, isAdmin: false, loading: false });
       }
-      setLoading(false);
     });
 
-    // Cleanup subscription on unmount
+ 
     return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin }}>
+    <AuthContext.Provider value={authState}>
       {children}
     </AuthContext.Provider>
   );
 };
+
 
 export const useAuth = () => useContext(AuthContext);

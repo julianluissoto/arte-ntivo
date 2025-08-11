@@ -1,9 +1,8 @@
 // src/app/products/[id]/page.tsx
 import { getProductById } from '@/lib/data';
 import { notFound } from 'next/navigation';
-;
-import { Skeleton } from '@/components/ui/skeleton';
 import ProductDetailsClient from '../ProductDetailsClient';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductDetailPageProps {
   params: {

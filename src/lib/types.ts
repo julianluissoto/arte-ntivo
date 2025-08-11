@@ -16,6 +16,7 @@ export interface Product {
   id: string; 
   title: string;
   price: string;
+  salePrice?: string;
   images: string[];
   hint: string;
   category: Category;
@@ -28,6 +29,10 @@ export interface Product {
   disponible?: boolean;
 }
 
+export interface CartItem extends Product {
+  quantity: number;
+}
+
 export interface Review {
   id: string;
   userId: string;
@@ -35,13 +40,8 @@ export interface Review {
   userImage?: string | null;
   rating: number;
   comment: string;
-  createdAt: {
-    seconds: number;
-    nanoseconds: number;
-  };
+  createdAt: string; // Changed to string to be serializable
 }
-
-
 
 export interface Customer {
     uid: string;
@@ -57,7 +57,4 @@ export interface News {
   image: string;
   hint: string;
   createdAt: string; // Changed to string to be serializable
-}
-export interface CartItem extends Product {
-  quantity: number;
 }

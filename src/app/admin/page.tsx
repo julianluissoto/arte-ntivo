@@ -12,8 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { UploadCloud, Loader2, PlusCircle, Trash2, ShieldAlert } from 'lucide-react';
 import type { Category } from '@/lib/types';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { addProduct } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,6 +60,7 @@ export default function AdminPage() {
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
+    const [salePrice, setSalePrice] = useState('');
     const [category, setCategory] = useState<Category | ''>('');
     const [imageUrls, setImageUrls] = useState(['']); // State for multiple image URLs
     const [hint, setHint] = useState('');
@@ -102,7 +102,7 @@ export default function AdminPage() {
         setIsLoading(true);
 
         try {
-            const newProduct = {
+            const newProductData = {
                 title: productName,
                 price: `$${price}`,
                 category,
@@ -111,19 +111,21 @@ export default function AdminPage() {
                 hint,
                 disponible: isAvailable,
                 isFeatured,
+                salePrice: salePrice ? `$${salePrice}` : undefined,
             };
             
-            const docRef = await addDoc(collection(db, 'products'), newProduct);
+            const newId = await addProduct(newProductData);
             
             toast({
                 title: '¡Producto Guardado!',
-                description: `El producto "${productName}" ha sido agregado con el ID: ${docRef.id}.`,
+                description: `El producto "${productName}" ha sido agregado con el ID: ${newId}.`,
             });
             
             // Reset form
             setProductName('');
             setDescription('');
             setPrice('');
+            setSalePrice('');
             setCategory('');
             setImageUrls(['']);
             setHint('');
@@ -200,7 +202,7 @@ export default function AdminPage() {
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label htmlFor="price">Precio</Label>
+                                <Label htmlFor="price">Precio Original</Label>
                                 <Input
                                     id="price"
                                     type="number"
@@ -211,19 +213,31 @@ export default function AdminPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="category">Categoría</Label>
-                                <Select onValueChange={(value: Category) => setCategory(value)} value={category} required>
-                                    <SelectTrigger id="category">
-                                        <SelectValue placeholder="Selecciona una categoría" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {categories.map(cat => (
-                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label htmlFor="sale-price">Precio de Oferta (Opcional)</Label>
+                                <Input
+                                    id="sale-price"
+                                    type="number"
+                                    value={salePrice}
+                                    onChange={(e) => setSalePrice(e.target.value)}
+                                    placeholder="Ej: 4500"
+                                />
                             </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="category">Categoría</Label>
+                            <Select onValueChange={(value: Category) => setCategory(value)} value={category} required>
+                                <SelectTrigger id="category">
+                                    <SelectValue placeholder="Selecciona una categoría" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map(cat => (
+                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
 
                         <div className="space-y-4">
                             <Label>URLs de las Imágenes</Label>
@@ -308,3 +322,5 @@ export default function AdminPage() {
         </div>
     );
 }
+
+    

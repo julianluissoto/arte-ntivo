@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper, Sparkles, ShoppingCart, Home } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper, Sparkles, ShoppingCart, Home, Flame } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import SearchInput from "./SearchInput";
 import { Badge } from "./ui/badge";
+import { cn } from "@/lib/utils";
 
 
 const categories: { name: Category; icon: React.ElementType }[] = [
@@ -33,8 +34,8 @@ const categories: { name: Category; icon: React.ElementType }[] = [
 
 const mainNavLinks = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/crear", label: "Personalizar", icon: Brush },
-    { href: "/generate-description", label: "Generar Descripción", icon: Sparkles }
+    { href: "/ofertas", label: "Ofertas", icon: Flame, className: "text-destructive font-bold animate-pulse-themable" }
+  
 ];
 
 const UserAuthSection = () => {
@@ -192,7 +193,7 @@ export default function CategorySidebar() {
                  <nav className="pt-1 px-4 pb-4 space-y-2">
                     <h3 className="px-2 text-lg font-semibold tracking-tight text-muted-foreground">Menú</h3>
                     {mainNavLinks.map(link => (
-                        <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} asChild className="w-full justify-start gap-3">
+                        <Button key={link.href} variant={pathname === link.href ? "secondary" : "ghost"} asChild className={cn("w-full justify-start gap-3", link.className)}>
                             <Link href={link.href}>
                                 {link.icon && <link.icon className="h-5 w-5" />}
                                 <span>{link.label}</span>

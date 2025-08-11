@@ -23,6 +23,7 @@ import {
   Newspaper,
   Sparkles,
   ShoppingCart,
+  Flame,
 } from "lucide-react";
 
 import * as React from "react";
@@ -71,19 +72,11 @@ const NavLinks = ({
           </Link>
         </Button>
       </SheetClose>
-      <SheetClose asChild>
-        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium gap-3">
-          <Link href="/crear" onClick={onSelect}>
-            <Brush className="h-5 w-5" />
-            Personalizar
-          </Link>
-        </Button>
-      </SheetClose>
-      <SheetClose asChild>
-        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium gap-3">
-            <Link href="/generate-description" onClick={onSelect}>
-                <Sparkles className="h-5 w-5" />
-                <span>Generar Descripción</span>
+       <SheetClose asChild>
+        <Button variant="ghost" asChild className="w-full justify-start text-base font-medium gap-3 text-destructive font-bold">
+            <Link href="/ofertas" onClick={onSelect}>
+                <Flame className="h-5 w-5" />
+                <span>Ofertas</span>
             </Link>
         </Button>
       </SheetClose>

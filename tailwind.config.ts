@@ -95,24 +95,28 @@ export default {
             height: '0',
           },
         },
-        'marquee-left': {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-100%)' }, 
+        'marquee-forward': {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0%)' },
         },
-        
-        'marquee-right': {
-          '0%': { transform: 'translateX(-100%)' }, 
-          '100%': { transform: 'translateX(0%)' },  
+        'marquee-backward': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'pulse-themable': {
+          '50%': {
+            opacity: '.5',
+          },
         },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'marquee-forward': 'marquee-left 60s linear infinite', 
-        'marquee-backward': 'marquee-right 60s linear infinite', 
+        'marquee-forward': 'marquee-forward 40s linear infinite',
+        'marquee-backward': 'marquee-backward 40s linear infinite',
+        'pulse-themable': 'pulse-themable 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
-    }
-    
+    },
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;

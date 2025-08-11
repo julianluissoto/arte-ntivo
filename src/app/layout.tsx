@@ -2,7 +2,7 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/Header';
@@ -51,8 +51,14 @@ export default function RootLayout({
                   </div>
                 </div>
               </div>
-              <WhatsAppButton />
-              <ChatPopup />
+
+              {/* Floating Action Buttons Container */}
+              <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+                <ChatPopup />
+                <WhatsAppButton />
+
+              </div>
+
               <ScrollToTopButton />
               <Toaster />
             </CartProvider>
