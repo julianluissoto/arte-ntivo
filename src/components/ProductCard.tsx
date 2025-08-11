@@ -180,35 +180,38 @@ export default function ProductCard({ product }: ProductCardProps) {
                  {product.salePrice && (
                     <Badge variant="destructive" className="absolute top-2 left-2 z-10">OFERTA</Badge>
                 )}
-
-                <div
-                    className={cn(
-                        "absolute bottom-2 right-2 rounded-full flex flex-col items-center justify-center text-center p-1 shadow-lg z-10",
-                        "h-20 w-20 md:h-24 md:w-24", // Smaller on mobile, larger on desktop
-                        product.disponible === false ? 'bg-red-600 text-accent-foreground' : 'bg-accent text-accent-foreground'
-                    )}
-                >
-                    {product.disponible === false ? (
-                       <>
-                         <span className="text-sm md:text-md font-semibold leading-tight">Sin</span>
-                         <span className="text-sm md:text-md font-semibold leading-tight">Stock</span>
-                       </>
-                    ) : (
-                        product.salePrice ? (
-                            <div className="flex flex-col">
-                                <span className="text-xl md:text-2xl font-bold text-destructive-foreground leading-tight">{product.salePrice}</span>
-                                <span className="text-sm md:text-base font-medium text-destructive-foreground/80 line-through leading-tight">{product.price}</span>
-                            </div>
-                        ) : (
-                            <div className="text-xl md:text-2xl font-bold leading-tight">{product.price}</div>
-                        )
-                    )}
-                </div>
+                 {!product.disponible && (
+                     <Badge variant="destructive" className="absolute bottom-2 left-2 z-10">Sin Stock</Badge>
+                )}
             </CardHeader>
              <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
-                <CardContent className="p-4 flex-grow flex flex-col">
-                    <CardTitle className="text-lg font-medium">{product.title}</CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground mt-1">{product.category}</CardDescription>
+                <CardContent className="p-4 flex-grow">
+                    <div className="flex flex-col justify-between min-h-[80px]">
+                      <div>
+                        <div className="flex justify-between items-start gap-2">
+                             <CardTitle className="text-base font-medium leading-tight group-hover:text-primary transition-colors">
+                                {product.title}
+                            </CardTitle>
+                            <div className="flex flex-col items-end flex-shrink-0">
+                                {product.salePrice ? (
+                                    <>
+                                        <p className="text-lg font-bold text-destructive">
+                                            {product.salePrice}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground line-through -mt-1">
+                                            {product.price}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <p className="text-lg font-bold text-primary">
+                                        {product.price}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                         <CardDescription className="text-xs text-muted-foreground mt-1">{product.category}</CardDescription>
+                      </div>
+                    </div>
                 </CardContent>
             </Link>
         </Card>

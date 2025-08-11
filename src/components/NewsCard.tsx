@@ -34,7 +34,7 @@ export default function NewsCard({ news }: NewsCardProps) {
                     <CardTitle className="text-xl font-bold font-headline">{news.title}</CardTitle>
                 </CardHeader>
                 <CardFooter className="p-4  flex-grow bg-secondary">
-                    <CardDescription className="text-sm  text-foreground/80">
+                    <CardDescription className="text-sm  text-white">
                         {news.description}
                     </CardDescription>
                 </CardFooter>
