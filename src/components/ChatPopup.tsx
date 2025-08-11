@@ -85,7 +85,7 @@ export default function ChatPopup() {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          className="fixed bottom-[10%] right-6 z-50 bg-primary text-primary-foreground p-0 w-16 h-16 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 ease-in-out transform hover:scale-110 flex items-center justify-center"
+          className="fixed bottom-[15%] right-6 z-50 bg-primary text-primary-foreground p-0 w-16 h-16 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 ease-in-out transform hover:scale-110 flex items-center justify-center"
           aria-label="Open AI Assistant"
         >
           <MessageCircle className="h-8 w-8" />
