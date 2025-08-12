@@ -185,20 +185,19 @@ export default function ProductCard({ product }: ProductCardProps) {
                 )}
             </CardHeader>
              <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
-                <CardContent className="p-4 flex-grow">
-                    <div className="flex flex-col justify-between min-h-[80px]">
-                      <div>
-                        <div className="flex justify-between items-start gap-2">
-                             <CardTitle className="text-base font-medium leading-tight group-hover:text-primary transition-colors">
+                <CardContent className="p-4 flex flex-col flex-grow">
+                     <div className="flex flex-col flex-grow justify-start min-h-[80px]">
+                        <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
+                             <CardTitle className="text-base font-medium leading-tight group-hover:text-primary transition-colors flex-grow">
                                 {product.title}
                             </CardTitle>
-                            <div className="flex flex-col items-end flex-shrink-0">
+                            <div className="flex flex-row sm:flex-col items-baseline sm:items-end gap-2 sm:gap-0 flex-shrink-0">
                                 {product.salePrice ? (
                                     <>
                                         <p className="text-lg font-bold text-destructive">
                                             {product.salePrice}
                                         </p>
-                                        <p className="text-sm text-muted-foreground line-through -mt-1">
+                                        <p className="text-sm text-muted-foreground line-through">
                                             {product.price}
                                         </p>
                                     </>
@@ -209,9 +208,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 )}
                             </div>
                         </div>
-                         <CardDescription className="text-xs text-muted-foreground mt-1">{product.category}</CardDescription>
+                        <CardDescription className="text-xs text-muted-foreground mt-1">{product.category}</CardDescription>
                       </div>
-                    </div>
                 </CardContent>
             </Link>
         </Card>
