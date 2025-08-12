@@ -9,6 +9,7 @@ import TestimonialCarousel from "@/components/TestimonialCarousel";
 import Ticker from "@/components/Ticker";
 import NewsCard from "@/components/NewsCard"; // Importar la nueva tarjeta
 import HeroSection from "@/components/HeroSection"; // Importar el nuevo componente
+import NewsletterForm from "@/components/NewsletterForm";
 
 interface HomeProps {
   searchParams?: {
@@ -81,7 +82,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Ticker messages={tickerMessages2} direccion="der" />
 
-       <section id="all-products">
+      <section id="all-products">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
           <h2 className="text-3xl font-bold font-headline text-primary">
             {selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}
@@ -130,35 +131,38 @@ export default async function Home({ searchParams }: HomeProps) {
       )}
 
       {selectedCategory === 'Todos' && (
-        <section className="py-12 border-t space-y-12">
-          <div>
-            <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-              Lo que dicen nuestros clientes
-            </h2>
-            {reviews.length > 0 ? (
-              <TestimonialCarousel testimonials={reviews} />
-            ) : (
-              <p className="text-center text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
-            )}
-          </div>
-
-          <CustomerReviews />
-
-          {/* Nueva sección de Novedades */}
-          {allNews.length > 0 && (
+        <>
+          <section className="py-12 border-t space-y-12">
             <div>
               <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-                Novedades
+                Lo que dicen nuestros clientes
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {allNews.map((newsItem) => (
-                  <NewsCard key={newsItem.id} news={newsItem} />
-                ))}
-              </div>
+              {reviews.length > 0 ? (
+                <TestimonialCarousel testimonials={reviews} />
+              ) : (
+                <p className="text-center text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
+              )}
             </div>
-          )}
 
-        </section>
+            <CustomerReviews />
+
+            {/* Nueva sección de Novedades */}
+            {allNews.length > 0 && (
+              <div>
+                <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+                  Novedades
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {allNews.map((newsItem) => (
+                    <NewsCard key={newsItem.id} news={newsItem} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+
+          <NewsletterForm />
+        </>
       )}
 
     </div>

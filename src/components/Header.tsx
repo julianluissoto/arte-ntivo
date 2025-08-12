@@ -24,6 +24,7 @@ import {
   Sparkles,
   ShoppingCart,
   Flame,
+  Mail,
 } from "lucide-react";
 
 import * as React from "react";
@@ -172,6 +173,14 @@ const AuthSectionMobile = () => {
                                         <Link href="/admin/news">
                                             <Newspaper className="h-5 w-5" />
                                             <span>Admin Nov.</span>
+                                        </Link>
+                                    </Button>
+                                </SheetClose>
+                                <SheetClose asChild>
+                                    <Button variant="outline" asChild className="w-full justify-center gap-2 text-xs h-auto py-2 flex-col">
+                                        <Link href="/admin/newsletter">
+                                            <Mail className="h-5 w-5" />
+                                            <span>Newsletter</span>
                                         </Link>
                                     </Button>
                                 </SheetClose>

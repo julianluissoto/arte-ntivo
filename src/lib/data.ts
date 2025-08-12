@@ -1,6 +1,6 @@
 // src/lib/data.ts
-import { Product, Review, Customer, News, CartItem } from './types';
-import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc, Timestamp } from "firebase/firestore";
+import { Product, Review, Customer, News, CartItem, Subscriber } from './types';
+import { collection, getDocs, getDoc, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, query, orderBy, setDoc, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from 'firebase/auth';
 
@@ -238,4 +238,49 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
   }
 }
 
-    
+// Functions for Newsletter Subscribers
+export async function addSubscriber(email: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const subscriberRef = doc(db, 'subscribers', email);
+        
+        // Directly write the document. If it exists, it will be overwritten.
+        // This avoids the need for a read operation and solves the permission issue.
+        await setDoc(subscriberRef, {
+            email: email,
+            subscribedAt: serverTimestamp(),
+        });
+
+        // Since we are not checking for existence first, we simply return a success message.
+        // We can add a more specific message if we check existence, but this is safer for now.
+        return { success: true, message: '¡Gracias por suscribirte!' };
+    } catch (error) {
+        console.error("❌ Error al añadir suscriptor:", error);
+        return { success: false, message: 'No se pudo completar la suscripción.' };
+    }
+}
+
+export async function getSubscribers(): Promise<Subscriber[]> {
+    try {
+        const subscribersCollection = collection(db, "subscribers");
+        const q = query(subscribersCollection, orderBy("subscribedAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        return snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const subscribedAt = data.subscribedAt as Timestamp;
+            return {
+                id: doc.id,
+                email: data.email,
+                subscribedAt: subscribedAt ? subscribedAt.toDate().toLocaleDateString() : '',
+            } as Subscriber;
+        });
+
+    } catch (error) {
+        console.error("❌ Error al obtener suscriptores:", error);
+        return [];
+    }
+}

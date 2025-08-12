@@ -97,7 +97,7 @@ export default function ChatPopup() {
                 aria-label="Open AI Assistant"
             >
                 <MessageCircle className="h-7 w-7" />
-                <span className="hidden sm:inline sm:ml-2">Hazme tu consulta</span>
+                <span className="hidden sm:inline sm:ml-2">Te ayudo</span>
             </Button>
         </SheetTrigger>
         <SheetContent 

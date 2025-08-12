@@ -58,3 +58,9 @@ export interface News {
   hint: string;
   createdAt: string; // Changed to string to be serializable
 }
+
+export interface Subscriber {
+  id: string;
+  email: string;
+  subscribedAt: string;
+}

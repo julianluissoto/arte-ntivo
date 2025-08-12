@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper, Sparkles, ShoppingCart, Home, Flame } from "lucide-react";
+import { Layers, Shirt, Square, Box, Wand2, MoreHorizontal, LogIn, LogOut, Heart, Brush, Eraser, UserPlus, User as UserIcon, Shield, Newspaper, Sparkles, ShoppingCart, Home, Flame, Mail } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { Category } from "@/lib/types";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -34,8 +34,7 @@ const categories: { name: Category; icon: React.ElementType }[] = [
 
 const mainNavLinks = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/ofertas", label: "Ofertas", icon: Flame, className: "text-destructive font-bold animate-pulse-themable" }
-  
+    { href: "/ofertas", label: "Ofertas", icon: Flame, className: "text-destructive font-bold animate-pulse-themable" },
 ];
 
 const UserAuthSection = () => {
@@ -100,18 +99,22 @@ const UserAuthSection = () => {
             </Button>
              {isAdmin && (
                 <>
-                    {/* Enlace al panel de administración de productos */}
                     <Button variant="ghost" asChild className="w-full justify-start gap-3">
                         <Link href="/admin">
                             <Shield className="h-5 w-5" />
                             <span>Admin Productos</span>
                         </Link>
                     </Button>
-                    {/* Enlace al panel de administración de novedades */}
                     <Button variant="ghost" asChild className="w-full justify-start gap-3">
                         <Link href="/admin/news">
                             <Newspaper className="h-5 w-5" />
                             <span>Admin Novedades</span>
+                        </Link>
+                    </Button>
+                    <Button variant="ghost" asChild className="w-full justify-start gap-3">
+                        <Link href="/admin/newsletter">
+                            <Mail className="h-5 w-5" />
+                            <span>Admin Newsletter</span>
                         </Link>
                     </Button>
                 </>
