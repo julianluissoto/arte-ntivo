@@ -241,23 +241,20 @@ export async function isUserAdmin(userId: string): Promise<boolean> {
 // Functions for Newsletter Subscribers
 export async function addSubscriber(email: string): Promise<{ success: boolean; message: string }> {
     try {
-        const subscriberRef = doc(db, 'subscribers', email);
-        
-        // Directly write the document. If it exists, it will be overwritten.
-        // This avoids the need for a read operation and solves the permission issue.
-        await setDoc(subscriberRef, {
+        const subscriberDoc = doc(db, "subscribers", email);
+        await setDoc(subscriberDoc, {
             email: email,
             subscribedAt: serverTimestamp(),
         });
-
-        // Since we are not checking for existence first, we simply return a success message.
-        // We can add a more specific message if we check existence, but this is safer for now.
+        
         return { success: true, message: '¡Gracias por suscribirte!' };
     } catch (error) {
         console.error("❌ Error al añadir suscriptor:", error);
-        return { success: false, message: 'No se pudo completar la suscripción.' };
+        const errorMessage = error instanceof Error ? error.message : 'No se pudo completar la suscripción.';
+        return { success: false, message: errorMessage };
     }
 }
+
 
 export async function getSubscribers(): Promise<Subscriber[]> {
     try {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet, Share2 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useShare } from '@/hooks/use-share'; // Importar el nuevo hook
+import { Separator } from './ui/separator';
 
 export default function Footer() {
   const { handleShare } = useShare(); // Usar el hook
@@ -12,44 +13,13 @@ export default function Footer() {
   return (
     <footer className="bg-secondary text-secondary-foreground mt-auto">
       <div className="container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           
-          {/* Columna Logo y Creado por */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left md:col-span-1 lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+          {/* Columna Logo */}
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4">
               <Logo className="h-auto w-36" />
-            </div>
-            
-            <p className="text-sm mt-4 text-white/80">
-              © {new Date().getFullYear()} Arte Nativo. All rights reserved.
-            </p>
-
-            <div className="mt-4 text-sm text-white/60">
-              <p>
-                Creado por <span className="font-semibold text-white">Julián Soto</span>
-              </p>
-              <div className="flex gap-4 mt-2">
-                <Link 
-                  href="https://www.linkedin.com/in/julian-soto-dev/" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Conectar en LinkedIn"
-                  className="hover:text-primary underline flex items-center gap-1"
-                >
-                  LinkedIn
-                </Link>
-                <Link 
-                  href="https://wa.me/5493571680795" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Contactar por WhatsApp"
-                  className="hover:text-primary underline flex items-center gap-1"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  WhatsApp
-                </Link>
-              </div>
-            </div>
+            </Link>
           </div>
 
           {/* Columna Navegación */}
@@ -66,7 +36,7 @@ export default function Footer() {
           {/* Columna Medios de Pago */}
            <div className="flex flex-col text-center md:text-left">
               <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col items-center md:items-start text-white/80">
                       <Banknote className="h-8 w-8 mb-1"/>
                       <span className="text-xs">Efectivo</span>
@@ -103,7 +73,29 @@ export default function Footer() {
               </button>
             </div>
           </div>
+        </div>
 
+        <Separator className="bg-white/20" />
+
+        <div className="flex flex-col md:flex-row justify-between items-center text-center pt-8 text-sm text-white/60 space-y-4 md:space-y-0">
+          <p>
+            © {new Date().getFullYear()} Arte Nativo. Todos los derechos reservados.
+          </p>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+             <span>
+                Creado por <a href="https://www.linkedin.com/in/julian-soto-dev/" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:text-primary underline">Julián Soto</a>
+             </span>
+             <a 
+                href="https://wa.me/5493571680795" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Contactar por WhatsApp"
+                className="hover:text-primary underline flex items-center gap-1"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>Contacto</span>
+             </a>
+          </div>
         </div>
       </div>
     </footer>

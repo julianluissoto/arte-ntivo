@@ -8,8 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShieldAlert, Send, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Subscriber } from '@/lib/types';
-import { getSubscribers } from '@/lib/data';
+import { Subscriber, News } from '@/lib/types';
+import { getSubscribers, getNews } from '@/lib/data';
+import { sendNewsletter } from '@/ai/flows/send-newsletter-flow'; // Importar el flow
 import {
   Table,
   TableBody,
@@ -18,6 +19,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const NewsletterSkeleton = () => (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -46,6 +59,7 @@ const NewsletterSkeleton = () => (
 export default function AdminNewsletterPage() {
     const { user, isAdmin, loading: authLoading } = useAuth();
     const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+    const [latestNews, setLatestNews] = useState<News | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const { toast } = useToast();
@@ -53,27 +67,45 @@ export default function AdminNewsletterPage() {
     useEffect(() => {
         if (isAdmin) {
             setIsLoading(true);
-            getSubscribers()
-                .then(setSubscribers)
+            Promise.all([getSubscribers(), getNews()])
+                .then(([subscribersData, newsData]) => {
+                    setSubscribers(subscribersData);
+                    if (newsData.length > 0) {
+                        setLatestNews(newsData[0]);
+                    }
+                })
                 .finally(() => setIsLoading(false));
         }
     }, [isAdmin]);
 
     const handleSendNewsletter = async () => {
+        if (!latestNews) {
+            toast({ variant: 'destructive', title: 'Error', description: 'No hay noticias para enviar.' });
+            return;
+        }
+
         setIsSending(true);
-        toast({
-            title: 'Enviando Novedades...',
-            description: `Se está procesando el envío a ${subscribers.length} suscriptores. (Función no implementada)`,
-        });
-        // Aquí iría la lógica para enviar el email.
-        // Por ahora, solo simulamos el proceso.
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        toast({
-            title: '¡Simulación Completa!',
-            description: 'La lógica de envío real necesitaría un servicio de backend.',
-        });
-        setIsSending(false);
+        try {
+            toast({
+                title: 'Generando Newsletter con IA...',
+                description: 'Este proceso puede tardar unos segundos.',
+            });
+            const result = await sendNewsletter({ latestNews, subscribers });
+            toast({
+                title: '¡Proceso Completado!',
+                description: result.message,
+            });
+            console.log("Email Preview:", result.emailPreview);
+        } catch (error) {
+            console.error("Error sending newsletter:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error al enviar',
+                description: error instanceof Error ? error.message : 'Ocurrió un error inesperado.',
+            });
+        } finally {
+            setIsSending(false);
+        }
     };
 
     if (authLoading) {
@@ -108,13 +140,32 @@ export default function AdminNewsletterPage() {
                             <CardTitle className="flex items-center gap-2"><Users /> Lista de Suscriptores</CardTitle>
                             <CardDescription>Actualmente tienes {subscribers.length} suscriptores.</CardDescription>
                         </div>
-                        <Button onClick={handleSendNewsletter} disabled={isSending || subscribers.length === 0}>
-                            {isSending ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</>
-                            ) : (
-                                <><Send className="mr-2 h-4 w-4" /> Enviar Novedades</>
-                            )}
-                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button disabled={isSending || subscribers.length === 0 || !latestNews}>
+                                    {isSending ? (
+                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</>
+                                    ) : (
+                                        <><Send className="mr-2 h-4 w-4" /> Enviar Novedades</>
+                                    )}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>¿Confirmar envío de Newsletter?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Estás a punto de generar y enviar un correo con la última novedad a 
+                                        <span className="font-bold"> {subscribers.length} </span> 
+                                        suscriptores. Esta acción utilizará la IA para generar el contenido.
+                                        {!latestNews && <p className="text-destructive font-bold mt-2">Advertencia: No hay noticias publicadas para enviar.</p>}
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleSendNewsletter}>Confirmar y Enviar</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </CardHeader>
                 <CardContent>
