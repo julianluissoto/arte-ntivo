@@ -13,7 +13,6 @@ import { z } from 'genkit';
 import { News, Subscriber } from '@/lib/types';
 import { Resend } from 'resend';
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const NewsletterEmailSchema = z.object({
@@ -22,7 +21,7 @@ const NewsletterEmailSchema = z.object({
 });
 
 const SendNewsletterInputSchema = z.object({
-  latestNews: z.custom<News>().describe('The latest news item to be sent.'),
+  newsItems: z.array(z.custom<News>()).describe('The list of news items to be sent.'),
   subscribers: z.array(z.custom<Subscriber>()).describe('The list of subscribers.'),
 });
 export type SendNewsletterInput = z.infer<typeof SendNewsletterInputSchema>;
@@ -41,8 +40,8 @@ const sendNewsletterFlow = ai.defineFlow(
     inputSchema: SendNewsletterInputSchema,
     outputSchema: SendNewsletterOutputSchema,
   },
-  async ({ latestNews, subscribers }) => {
-    if (!latestNews) {
+  async ({ newsItems, subscribers }) => {
+    if (!newsItems || newsItems.length === 0) {
         throw new Error("No hay noticias para enviar.");
     }
     
@@ -58,17 +57,23 @@ const sendNewsletterFlow = ai.defineFlow(
         throw new Error("La API Key de Resend no está configurada. Por favor, añádela a tus variables de entorno.");
     }
 
+    const newsHtml = newsItems.map(news => `
+        <div style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #eeeeee;">
+            <img src="${news.image}" alt="${news.title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 1rem;" />
+            <h3 style="font-size: 1.25rem; margin-top: 0; margin-bottom: 0.5rem;">${news.title}</h3>
+            <p style="margin-top: 0; margin-bottom: 1rem;">${news.description}</p>
+            <a href="https://arte-nativo-web.vercel.app/news/${news.id}" style="display: inline-block; padding: 10px 20px; background-color: #1a73e8; color: #ffffff; text-decoration: none; border-radius: 5px;">
+              Ver más
+            </a>
+        </div>
+    `).join('');
+    
     // Manual email body construction
-    const subject = "Novedades arte nativo estampados";
+    const subject = "Novedades de Arte Nativo Estampados";
     const body = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2>Estas son las novedades que tenemos para vos:</h2>
-        <img src="${latestNews.image}" alt="${latestNews.title}" style="max-width: 100%; height: auto; border-radius: 8px;" />
-        <h3>${latestNews.title}</h3>
-        <p>${latestNews.description}</p>
-        <a href="https://arte-nativo-web.web.app/news/${latestNews.id}" style="display: inline-block; padding: 10px 20px; background-color: #1a73e8; color: #ffffff; text-decoration: none; border-radius: 5px;">
-          Ver más
-        </a>
+        <h2 style="font-size: 1.5rem; margin-bottom: 2rem;">Estas son las novedades que tenemos para vos:</h2>
+        ${newsHtml}
       </div>
     `;
 
@@ -77,9 +82,10 @@ const sendNewsletterFlow = ai.defineFlow(
     // Send email to all subscribers using Resend
     try {
         const emails = subscribers.map(s => s.email);
+        console.log("Sending emails to:", emails);
         await resend.emails.send({
-            from: 'Arte Nativo <newsletter@info.artenativo.com.ar>', // You will need to verify this domain in Resend
-            to: emails,
+            from: 'Acme <onboarding@resend.dev>', 
+            to: ['julianlasoto@gmail.com'], // Use a test address from Resend
             subject: emailContent.subject,
             html: emailContent.body,
         });

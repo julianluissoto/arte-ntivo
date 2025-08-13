@@ -59,7 +59,7 @@ const NewsletterSkeleton = () => (
 export default function AdminNewsletterPage() {
     const { user, isAdmin, loading: authLoading } = useAuth();
     const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-    const [latestNews, setLatestNews] = useState<News | null>(null);
+    const [allNews, setAllNews] = useState<News[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const { toast } = useToast();
@@ -70,16 +70,14 @@ export default function AdminNewsletterPage() {
             Promise.all([getSubscribers(), getNews()])
                 .then(([subscribersData, newsData]) => {
                     setSubscribers(subscribersData);
-                    if (newsData.length > 0) {
-                        setLatestNews(newsData[0]);
-                    }
+                    setAllNews(newsData);
                 })
                 .finally(() => setIsLoading(false));
         }
     }, [isAdmin]);
 
     const handleSendNewsletter = async () => {
-        if (!latestNews) {
+        if (!allNews || allNews.length === 0) {
             toast({ variant: 'destructive', title: 'Error', description: 'No hay noticias para enviar.' });
             return;
         }
@@ -87,10 +85,10 @@ export default function AdminNewsletterPage() {
         setIsSending(true);
         try {
             toast({
-                title: 'Generando Newsletter con IA...',
+                title: 'Generando Newsletter...',
                 description: 'Este proceso puede tardar unos segundos.',
             });
-            const result = await sendNewsletter({ latestNews, subscribers });
+            const result = await sendNewsletter({ newsItems: allNews, subscribers });
             toast({
                 title: '¡Proceso Completado!',
                 description: result.message,
@@ -142,11 +140,11 @@ export default function AdminNewsletterPage() {
                         </div>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button disabled={isSending || subscribers.length === 0 || !latestNews}>
+                                <Button disabled={isSending || subscribers.length === 0 || allNews.length === 0}>
                                     {isSending ? (
                                         <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</>
                                     ) : (
-                                        <><Send className="mr-2 h-4 w-4" /> Enviar Novedades</>
+                                        <><Send className="mr-2 h-4 w-4" /> Enviar Todas las Novedades</>
                                     )}
                                 </Button>
                             </AlertDialogTrigger>
@@ -154,10 +152,10 @@ export default function AdminNewsletterPage() {
                                 <AlertDialogHeader>
                                     <AlertDialogTitle>¿Confirmar envío de Newsletter?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Estás a punto de generar y enviar un correo con la última novedad a 
+                                        Estás a punto de enviar un correo con todas las novedades a 
                                         <span className="font-bold"> {subscribers.length} </span> 
-                                        suscriptores. Esta acción utilizará la IA para generar el contenido.
-                                        {!latestNews && <p className="text-destructive font-bold mt-2">Advertencia: No hay noticias publicadas para enviar.</p>}
+                                        suscriptores.
+                                        {allNews.length === 0 && <p className="text-destructive font-bold mt-2">Advertencia: No hay noticias publicadas para enviar.</p>}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
