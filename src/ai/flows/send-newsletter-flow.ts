@@ -12,7 +12,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { News, Subscriber } from '@/lib/types';
 import { Resend } from 'resend';
-import { getSubscribers, getNews } from '@/lib/data';
+
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
