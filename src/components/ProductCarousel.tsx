@@ -3,7 +3,7 @@
 
 import Slider from "react-slick";
 import ProductCard from "./ProductCard";
-import type { Product } from "@/lib/mock-data";
+import type { Product } from "@/lib/types";
 
 interface ProductCarouselProps {
     products: Product[];
@@ -17,7 +17,7 @@ export default function ProductCarousel({ products }: ProductCarouselProps) {
         slidesToShow: 3,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 1500,
+        autoplaySpeed: 3000,
         responsive: [
             {
                 breakpoint: 1024,

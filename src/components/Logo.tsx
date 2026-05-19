@@ -10,7 +10,7 @@ interface LogoProps {
   height?: number;
 }
 
-export const LogoSvg = ({ className, width = 150, height = 80 }: LogoProps) => {
+export const Logo = ({ className, width = 150, height = 80 }: LogoProps) => {
   return (
     <div className={cn("relative", className)}>
       <Image
@@ -23,3 +23,18 @@ export const LogoSvg = ({ className, width = 150, height = 80 }: LogoProps) => {
     </div>
   );
 };
+
+export const Logo2 = ({ className, width = 250, height = 150 }: LogoProps) => {
+  return (
+    <div className={cn("relative", className)}>
+      <Image
+        src="/assets/logo2.png"
+        alt="Arte Nativo Logo"
+        width={width}
+        height={height}
+        priority
+      />
+    </div>
+  );
+};
+

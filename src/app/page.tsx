@@ -1,46 +1,97 @@
-
-import { products } from "@/lib/mock-data";
+// src/app/page.tsx
 import ProductCard from "@/components/ProductCard";
-import type { Category } from "@/lib/mock-data";
 import ProductCarousel from "@/components/ProductCarousel";
+import { getProducts, getReviews, getNews } from "@/lib/data"; // Tus funciones de Firestore
+import type { Category, Product, Review, News } from "@/lib/types"; // Importa Review y News
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import CustomerReviews from "@/components/CustomerReviews";
+import TestimonialCarousel from "@/components/TestimonialCarousel";
+import Ticker from "@/components/Ticker";
+import NewsCard from "@/components/NewsCard"; // Importar la nueva tarjeta
+import HeroSection from "@/components/HeroSection"; // Importar el nuevo componente
+import NewsletterForm from "@/components/NewsletterForm";
 
 interface HomeProps {
   searchParams?: {
     category?: Category;
+    page?: string;
   };
 }
 
-export default function Home({ searchParams }: HomeProps) {
+const PRODUCTS_PER_PAGE = 8;
+
+export const revalidate = 60;
+
+
+export default async function Home({ searchParams }: HomeProps) {
   const selectedCategory = searchParams?.category ?? "Todos";
+  const currentPage = Number(searchParams?.page ?? 1);
 
-  const filteredProducts =
+  const allProducts: Product[] = await getProducts();
+  const reviews: Review[] = await getReviews();
+  const allNews: News[] = await getNews();
+
+  const filteredProductsByCategory =
     selectedCategory === "Todos"
-      ? products
-      : products.filter((p) => p.category === selectedCategory);
+      ? allProducts
+      : allProducts.filter((p) => p.category === selectedCategory);
 
-  const featuredProducts = products.filter((p) => p.isFeatured);
+  const totalPages = Math.ceil(filteredProductsByCategory.length / PRODUCTS_PER_PAGE);
+  const offset = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const productsForCurrentPage = filteredProductsByCategory.slice(offset, offset + PRODUCTS_PER_PAGE);
+
+  const featuredProducts = allProducts.filter((p) => p.isFeatured);
+  
+  const tickerMessages1 = [
+    "¡Aprovecha las promos por cantidad en stickers!",
+    "Recibimos todos los medios de pago",
+    "12 años de experiencia"
+  ];
+  
+  const tickerMessages2 = [
+    "La mejor calidad en algodón",
+    "Planes especiales para colegios e instituciones",
+    "Todo tipo de estampas y stickers personalizados"
+  ];
+
+
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return `/?${params.toString()}`;
+  };
 
   return (
-    <div className="space-y-8">
-      {selectedCategory === 'Todos' && (
-        <section className="mb-12">
-            <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
-                Productos Destacados
-            </h2>
+    <div className="space-y-12">
+      {selectedCategory === 'Todos' && currentPage === 1 && (
+        <HeroSection />
+      )}
+
+      <Ticker messages={tickerMessages1} direccion="izq" />
+      
+      {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
+        <section>
+          <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
+            Productos Destacados
+          </h2>
+          <div className="overflow-hidden">
             <ProductCarousel products={featuredProducts} />
+          </div>
         </section>
       )}
 
-      <section>
+      <Ticker messages={tickerMessages2} direccion="der" />
+
+      <section id="all-products">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
           <h2 className="text-3xl font-bold font-headline text-primary">
             {selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}
           </h2>
         </div>
 
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product) => (
+        {productsForCurrentPage.length > 0 ? (
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {productsForCurrentPage.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -50,6 +101,70 @@ export default function Home({ searchParams }: HomeProps) {
           </div>
         )}
       </section>
+
+      {totalPages > 1 && (
+        <section className="pt-8">
+          <Pagination>
+            <PaginationContent>
+              {currentPage > 1 && (
+                <PaginationItem>
+                  <PaginationPrevious href={createPageURL(currentPage - 1)} />
+                </PaginationItem>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <PaginationItem key={page}>
+                  <PaginationLink href={createPageURL(page)} isActive={currentPage === page}>
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {currentPage < totalPages && (
+                <PaginationItem>
+                  <PaginationNext href={createPageURL(currentPage + 1)} />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
+        </section>
+      )}
+
+      {selectedCategory === 'Todos' && (
+        <>
+          <section className="py-12 border-t space-y-12">
+            <div>
+              <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+                Lo que dicen nuestros clientes
+              </h2>
+              {reviews.length > 0 ? (
+                <TestimonialCarousel testimonials={reviews} />
+              ) : (
+                <p className="text-center text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
+              )}
+            </div>
+
+            <CustomerReviews />
+
+            {/* Nueva sección de Novedades */}
+            {allNews.length > 0 && (
+              <div>
+                <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
+                  Novedades
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {allNews.map((newsItem) => (
+                    <NewsCard key={newsItem.id} news={newsItem} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+
+          <NewsletterForm />
+        </>
+      )}
+
     </div>
   );
 }

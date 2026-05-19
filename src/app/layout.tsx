@@ -1,14 +1,20 @@
+
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
-import CategorySidebar from '@/components/CategorySidebar';
-import CategorySidebarSuspense from '@/components/CategorySidebarSuspense';
+import CategorySidebar, { CategorySidebarSkeleton } from '@/components/CategorySidebar';
+import { AuthProvider } from '@/hooks/useAuth';
+import { FavoritesProvider } from '@/hooks/useFavorites';
+import { CartProvider } from '@/hooks/useCart';
+import { Suspense } from 'react';
+import ChatPopup from '@/components/ChatPopup';
 
 export const metadata: Metadata = {
   title: 'Arte Nativo Estampados',
@@ -27,20 +33,36 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased">
-        <div className="flex min-h-screen bg-background">
-          <CategorySidebarSuspense/>
-          <div className="flex flex-col w-full">
-            <Header />
-            <main className="flex-grow container mx-auto px-4 py-8">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </div>
-        <WhatsAppButton />
-        <ScrollToTopButton />
-        <Toaster />
+      <body className="font-body antialiased bg-muted">
+        <AuthProvider>
+          <FavoritesProvider>
+            <CartProvider>
+              <div className="max-w-screen-2xl mx-auto border-x shadow-2xl">
+                <div className="flex min-h-screen bg-background">
+                  <Suspense fallback={<CategorySidebarSkeleton />}>
+                    <CategorySidebar />
+                  </Suspense>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <Header />
+                    <main className="flex-grow p-4 md:p-8">
+                      {children}
+                    </main>
+                    <Footer />
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Action Buttons Container */}
+              <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+                <ChatPopup />
+                <WhatsAppButton />
+              </div>
+
+              <ScrollToTopButton />
+              <Toaster />
+            </CartProvider>
+          </FavoritesProvider>
+        </AuthProvider>
       </body>
     </html>
   );
