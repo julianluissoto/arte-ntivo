@@ -1,11 +1,5 @@
-// src/ai/genkit.ts
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
+import Groq from 'groq-sdk';
 
-export const ai = genkit({
-  plugins: [
-    googleAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
-  ],
+const groqClient = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });

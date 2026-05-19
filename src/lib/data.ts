@@ -201,7 +201,7 @@ export async function getNewsById(id: string): Promise<News | null> {
 // Functions for Cart
 export async function saveUserCart(userId: string, cartItems: CartItem[]) {
   try {
-    // Use doc(db, 'carts', userId) to create a reference with the user's ID
+   
     const cartRef = doc(db, 'carts', userId);
     // Use setDoc to create or overwrite the document with the specific ID.
     // { merge: true } is crucial to prevent overwriting existing data if we only want to update.

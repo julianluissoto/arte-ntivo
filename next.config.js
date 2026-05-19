@@ -11,18 +11,41 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com', // ¡Añadido Cloudinary aquí!
+        hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '**', // Mantenemos RandomUser.me
+        hostname: '**',
         port: '',
         pathname: '/**',
       },
-      // Puedes añadir más objetos si tienes imágenes de otros dominios
     ],
+  },
+  
+  // 1. Externaliza los paquetes conflictivos para que Next.js 14 los cargue en tiempo de ejecución
+  experimental: {
+    serverComponentsExternalPackages: [
+      'genkit',
+      '@genkit-ai/core',
+      '@genkit-ai/ai',
+      '@genkit-ai/googleai',
+      '@genkit-ai/next',
+      '@opentelemetry/sdk-node',
+      'handlebars'
+    ],
+  },
+
+  // 2. Le dice a Webpack que ignore las llamadas de telemetría dinámica que rompen el despliegue
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push({
+        'require-in-the-middle': 'commonjs require-in-the-middle',
+        'shimmer': 'commonjs shimmer',
+      });
+    }
+    return config;
   },
 };
 

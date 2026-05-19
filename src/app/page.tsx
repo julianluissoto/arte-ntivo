@@ -49,7 +49,7 @@ export default async function Home({ searchParams }: HomeProps) {
   ];
   
   const tickerMessages2 = [
-    "Descuento por cantidad",
+    "La mejor calidad en algodón",
     "Planes especiales para colegios e instituciones",
     "Todo tipo de estampas y stickers personalizados"
   ];
@@ -90,7 +90,7 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
 
         {productsForCurrentPage.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {productsForCurrentPage.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

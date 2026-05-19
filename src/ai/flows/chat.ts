@@ -1,94 +1,85 @@
-// src/ai/flows/chat.ts
 'use server';
 
-/**
- * @fileOverview A chat flow for the Arte Nativo Estampados store.
- */
-
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-import { MessageData } from 'genkit';
+import Groq from 'groq-sdk';
 import { getProducts } from '@/lib/data';
 
-// Tool para que la IA pueda consultar los productos
-const getStoreProducts = ai.defineTool(
-  {
-    name: 'getStoreProducts',
-    description:
-      'Obtiene la lista de productos disponibles en la tienda para responder preguntas sobre stock, tipos de productos, materiales, etc. Úsalo cuando el usuario pregunte qué vendes, si tienes un artículo específico o sobre la disponibilidad de productos.',
-    inputSchema: z.object({}),
-    outputSchema: z.array(
-      z.object({
-        title: z.string(),
-        category: z.string(),
-        description: z.string(),
-        disponible: z.boolean().optional(),
-      })
-    ),
-  },
-  async () => {
-    console.log('Buscando productos en la tienda...');
+const groqClient = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+export type ChatInput = {
+  history: { role: string; content: string }[];
+  message: string;
+};
+
+export type ChatOutput = {
+  message: string;
+};
+
+const systemPrompt = `Eres un asistente amigable y útil de Arte Nativo Estampados, una tienda que vende productos personalizados como remeras, tazas, llaveros y más.
+
+Tu rol es:
+- Responder preguntas de clientes sobre productos, materiales y opciones de personalización.
+- Ayudar a los usuarios con sus ideas de diseño.
+- Brindar información sobre la tienda.
+- Mantener un tono positivo y creativo.
+- Ser conciso y directo en tus respuestas.
+- Habla siempre en español.`;
+
+async function fetchProducts() {
+  try {
     const products = await getProducts();
-    // Asegurarse de que el formato coincida exactamente con el schema
-    return products.map(({ title, category, description, disponible }) => ({
-      title,
-      category,
-      description,
-      disponible: disponible ?? false, // Asegurar que disponible siempre sea un booleano
+    if (!products || !Array.isArray(products)) return [];
+    return products.map((p: any) => ({
+      title: String(p?.title || 'Producto sin nombre'),
+      category: String(p?.category || 'General'),
+      description: String(p?.description || ''),
+      disponible: Boolean(p?.disponible),
     }));
+  } catch {
+    return [];
   }
-);
-
-const ChatInputSchema = z.object({
-  history: z.array(z.any()).describe('The conversation history.'),
-  message: z.string().describe('The latest user message.'),
-});
-export type ChatInput = z.infer<typeof ChatInputSchema>;
-
-const ChatOutputSchema = z.object({
-  message: z.string().describe('The AI-generated response.'),
-});
-export type ChatOutput = z.infer<typeof ChatOutputSchema>;
-
-const systemPrompt = `You are a friendly and helpful AI assistant for Arte Nativo Estampados, a store that sells personalized products like t-shirts, mugs, keychains, and more.
-
-Your role is to:
-- Answer customer questions about products, materials, and personalization options.
-- Help users with their design ideas.
-- Provide information about the store.
-- Maintain a positive and creative tone.
-- Keep your answers concise and to the point.
-- IMPORTANT: When the user asks about available products, what you sell, or if you have a specific item (like 'remeras', 'tazas', 'pines', etc.), you MUST use the getStoreProducts tool to get the current product list before answering. Do not invent products.
-- After using the tool, answer the user's question based on the information you received.
-`;
-
-const chatFlow = ai.defineFlow(
-  {
-    name: 'chatFlow',
-    inputSchema: ChatInputSchema,
-    outputSchema: ChatOutputSchema,
-  },
-  async ({ history, message }) => {
-    const chatHistory: MessageData[] = history.map((msg: any) => ({
-      role: msg.role,
-      content: [{ text: msg.content }],
-    }));
-
-    const llmResponse = await ai.generate({
-      model: 'googleai/gemini-2.0-flash',
-      system: systemPrompt,
-      history: chatHistory,
-      prompt: message,
-      tools: [getStoreProducts],
-    });
-
-    const responseText = llmResponse.text;
-    return {
-      message: responseText,
-    };
-  }
-);
+}
 
 export async function chat(input: ChatInput): Promise<ChatOutput> {
-  return chatFlow(input);
+  try {
+    const { history, message } = input;
+
+    // Detectamos si el usuario pregunta por productos
+    const productKeywords = ['producto', 'vend', 'remera', 'taza', 'llavero', 'stock', 'disponible', 'tienen', 'tienes', 'catálogo', 'catalogo', 'artículo', 'articulo', 'pin', 'comprar'];
+    const asksForProducts = productKeywords.some(kw => message.toLowerCase().includes(kw));
+
+    let productContext = '';
+    if (asksForProducts) {
+      const products = await fetchProducts();
+      if (products.length > 0) {
+        productContext = `\n\nProductos disponibles en la tienda:\n${JSON.stringify(products, null, 2)}`;
+      }
+    }
+
+    const messages: Groq.Chat.ChatCompletionMessageParam[] = [
+      { role: 'system', content: systemPrompt + productContext },
+      ...history.map(msg => ({
+        role: (msg.role === 'model' ? 'assistant' : msg.role) as 'user' | 'assistant',
+        content: msg.content,
+      })),
+      { role: 'user', content: message },
+    ];
+
+    const completion = await groqClient.chat.completions.create({
+     model: 'llama-3.1-8b-instant',
+      messages,
+      max_tokens: 1024,
+    });
+
+    const responseText = completion.choices[0]?.message?.content || '';
+
+    return { message: responseText };
+
+  } catch (error: any) {
+    console.error('Error en el flujo del Chatbot:', error?.message);
+    return {
+      message: 'Hola! Estoy experimentando un inconveniente técnico. ¿Podrías intentar de nuevo?',
+    };
+  }
 }

@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Facebook, Instagram, MessageCircle, Banknote, Landmark, CreditCard, Wallet, Share2 } from 'lucide-react';
-import { Logo } from './Logo';
+import { Logo2 } from './Logo';
 import { useShare } from '@/hooks/use-share'; // Importar el nuevo hook
 import { Separator } from './ui/separator';
 
@@ -18,19 +18,19 @@ export default function Footer() {
           {/* Columna Logo */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <Logo className="h-auto w-36" />
+              <Logo2 className="h-auto w-46" />
             </Link>
           </div>
 
           {/* Columna Navegación */}
           <div className="text-center md:text-left">
             <h3 className="font-bold text-lg mb-4 text-white">Navegación</h3>
-            <ul className="space-y-2 text-sm text-white/80">
-              <li><Link href="/" className="hover:text-primary">Home</Link></li>
-              <li><Link href="/crear" className="hover:text-primary">Personalizar</Link></li>
-              <li><Link href="/favorites" className="hover:text-primary">Favoritos</Link></li>
-              <li><Link href="/login" className="hover:text-primary">Login</Link></li>
-            </ul>
+             <div className="grid grid-cols-2 gap-2 text-sm text-white/80 md:grid-cols-1 md:space-y-2">
+              <Link href="/" className="hover:text-primary">Home</Link>
+              <Link href="/signup" className="hover:text-primary">Registrate</Link>
+              <Link href="/favorites" className="hover:text-primary">Favoritos</Link>
+              <Link href="/login" className="hover:text-primary">Login</Link>
+            </div>
           </div>
 
           {/* Columna Medios de Pago */}

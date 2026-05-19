@@ -181,7 +181,7 @@ export default function CategorySidebar() {
 
     return (
         <aside className="hidden md:flex flex-col w-72 bg-card border-r h-screen sticky top-0 p-4">
-            <div className="flex justify-center mb-10 flex-shrink-0">
+            <div className="flex justify-center mb-14 flex-shrink-0 ">
                 <Link href="/" className="inline-flex items-center">
                     <Logo className="h-12 w-auto" />
                 </Link>
