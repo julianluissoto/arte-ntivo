@@ -96,11 +96,18 @@ export default function EditProductForm({ product }: EditProductFormProps) {
 
             router.refresh(); 
             
-        } catch (error) {
+        } catch (error: any) {
+            const code = error?.code ?? 'desconocido';
+            const detail =
+                code === 'permission-denied'
+                    ? 'Firestore rechazó la escritura (reglas de seguridad). Revisá que tu usuario tenga permiso de admin en las reglas.'
+                    : code === 'unauthenticated'
+                    ? 'Tu sesión expiró. Volvé a iniciar sesión e intentá de nuevo.'
+                    : error?.message ?? 'Error desconocido.';
             toast({
                 variant: 'destructive',
-                title: 'Error al Actualizar',
-                description: 'No se pudo actualizar el producto en la base de datos.',
+                title: `Error al Actualizar (${code})`,
+                description: detail,
             });
         } finally {
             setIsLoading(false);

@@ -15,6 +15,7 @@ import type { Category } from '@/lib/types';
 import { addProduct } from '@/lib/data';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { AdminAccessDenied, AdminHeader } from '@/components/AdminHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const categories: Category[] = [
@@ -151,26 +152,13 @@ export default function AdminPage() {
     }
 
     if (!user || !isAdmin) {
-        return (
-            <div className="text-center py-20 bg-card rounded-lg border border-dashed">
-                <ShieldAlert className="h-16 w-16 text-destructive mx-auto mb-4" />
-                <h2 className="text-2xl font-bold font-headline text-destructive">Acceso Denegado</h2>
-                <p className="text-muted-foreground mt-2 mb-6">No tienes permiso para ver esta página.</p>
-                <Button onClick={() => router.push('/')}>Volver al Inicio</Button>
-            </div>
-        );
+        return <AdminAccessDenied />;
     }
 
     return (
-        <div className="max-w-2xl mx-auto space-y-8">
-            <div className="text-center">
-                <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
-                    Panel de Administración
-                </h1>
-                <p className="mt-4 text-lg text-foreground/80">
-                    Añade nuevos productos a tu tienda.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <AdminHeader title="Productos." subtitle="Agregá nuevos productos a la tienda." />
+            <div className="max-w-2xl space-y-8">
 
             <Card>
                 <CardHeader>
@@ -319,6 +307,7 @@ export default function AdminPage() {
                     </form>
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 }

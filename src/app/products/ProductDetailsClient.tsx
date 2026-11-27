@@ -1,250 +1,279 @@
-// src/app/products/[id]/ProductDetailsClient.tsx
+// src/app/products/ProductDetailsClient.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
+import { ImageWithSkeleton } from '@/components/ui/image-with-skeleton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Minus, Plus, Edit, ShoppingCart, Share2 } from 'lucide-react';
+import { ChevronRight, Edit, MessageCircle, Minus, Plus, Share2, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Product } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
-import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import EditProductForm from '@/components/EditProductForm';
 import { useShare } from '@/hooks/use-share';
-import { Badge } from '@/components/ui/badge';
+import { phoneNumber } from '@/components/WhatsAppButton';
+import { colorName, formatPrice, parsePrice } from '@/lib/cart-utils';
 
 interface ProductDetailsClientProps {
   product: Product;
 }
 
 export default function ProductDetailsClient({ product }: ProductDetailsClientProps) {
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   const { addToCart } = useCart();
-  const { toast } = useToast();
   const { handleShare } = useShare();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(product.options?.colors?.[0]);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(product.options?.sizes?.[0]);
-  
-  const imageUrls = Array.isArray(product.images) ? product.images : (product.images ? [product.images] : []);
-  
+
+  const imageUrls = Array.isArray(product.images) ? product.images : product.images ? [product.images as unknown as string] : [];
   const [selectedImage, setSelectedImage] = useState<string>(imageUrls[0] ?? '');
 
   useEffect(() => {
-    const newImageUrls = Array.isArray(product.images) ? product.images : (product.images ? [product.images] : []);
-    setSelectedImage(newImageUrls[0] ?? '');
+    const urls = Array.isArray(product.images) ? product.images : product.images ? [product.images as unknown as string] : [];
+    setSelectedImage(urls[0] ?? '');
     setSelectedColor(product.options?.colors?.[0]);
     setSelectedSize(product.options?.sizes?.[0]);
   }, [product]);
 
-  const handleQuantityChange = (amount: number) => {
-    setQuantity(prev => Math.max(1, prev + amount));
-  };
-  
+  const outOfStock = product.disponible === false;
+  const salePrice = parsePrice(product.salePrice);
+  const price = parsePrice(product.price);
+
   const handleAddToCart = () => {
-    if (!user) {
-        toast({
-            variant: "destructive",
-            title: "Debes iniciar sesión",
-            description: "Para agregar productos al carrito, primero debes iniciar sesión.",
-        });
-        return;
-    }
-    addToCart(product, quantity);
-    toast({
-        title: "¡Producto agregado!",
-        description: `${product.title} (x${quantity}) se ha añadido a tu carrito.`,
-    });
+    addToCart(product, quantity, { color: selectedColor, size: selectedSize });
+  };
+
+  const whatsappHref = () => {
+    const variant = [selectedSize && `talle ${selectedSize}`, selectedColor && `color ${colorName(selectedColor)}`]
+      .filter(Boolean)
+      .join(', ');
+    const text = `¡Hola! Quiero consultar por "${product.title}"${variant ? ` (${variant})` : ''}, cantidad: ${quantity}.`;
+    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`;
   };
 
   const handleShareProduct = () => {
     handleShare({
       title: product.title,
-      text: `¡Mira este producto de Arte Nativo Estampados!: ${product.title}`,
+      text: `¡Mirá este producto de Arte Nativo Estampados!: ${product.title}`,
       url: window.location.href,
     });
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <div className="grid md:grid-cols-2 gap-12 items-start">
-        {/* Product Image Gallery */}
-        <div className="flex flex-col-reverse md:grid md:grid-cols-[80px_1fr] gap-4 items-start overflow-hidden">
-            <div className="w-full md:w-auto flex flex-row md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar py-2 md:py-0 md:max-h-[480px]">
-                {imageUrls.map((image, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setSelectedImage(image)}
-                        className={cn(
-                            "relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0",
-                            selectedImage === image ? 'border-primary' : 'border-transparent hover:border-primary/50'
-                        )}
-                    >
-                        <Image
-                            src={image}
-                            alt={`${product.title} thumbnail ${index + 1}`}
-                            width={80}
-                            height={80}
-                            className="object-cover w-full h-full"
-                        />
-                    </button>
-                ))}
-            </div>
-            <div className="aspect-square w-full relative bg-card border rounded-lg overflow-hidden">
-                {product.salePrice && (
-                    <Badge variant="destructive" className="absolute top-2 left-2 z-10 text-lg">
-                        OFERTA
-                    </Badge>
+    <div>
+      {/* Migas de pan */}
+      <nav aria-label="Ruta" className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Link href="/" className="hover:text-primary">Inicio</Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <Link href={`/?category=${product.category}#all-products`} className="hover:text-primary">
+          {product.category}
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="truncate text-foreground">{product.title}</span>
+      </nav>
+
+      <div className="grid items-start gap-8 md:grid-cols-2 lg:gap-14">
+        {/* Galería */}
+        <div className="flex flex-col-reverse gap-4 md:grid md:grid-cols-[80px_1fr] md:items-start">
+          <div className="no-scrollbar flex gap-3 overflow-x-auto py-1 md:max-h-[520px] md:flex-col md:overflow-y-auto md:py-0">
+            {imageUrls.map((image, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImage(image)}
+                className={cn(
+                  'relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-muted transition-all',
+                  selectedImage === image ? 'border-primary' : 'border-transparent hover:border-primary/40'
                 )}
-                {selectedImage ? (
-                    <Image
-                        src={selectedImage}
-                        alt={product.title}
-                        fill
-                        className="object-contain"
-                        data-ai-hint={product.hint}
-                    />
-                ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <span className="text-sm text-muted-foreground">No hay imagen</span>
-                    </div>
-                )}
-            </div>
+                aria-label={`Ver imagen ${index + 1}`}
+              >
+                <ImageWithSkeleton
+                  src={image}
+                  alt={`${product.title} - imagen ${index + 1}`}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+          <div className="relative aspect-square w-full overflow-hidden rounded-[2rem] bg-muted">
+            {salePrice > 0 && (
+              <span className="absolute left-4 top-4 z-10 rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-foreground">
+                Oferta
+              </span>
+            )}
+            {selectedImage ? (
+              <ImageWithSkeleton
+                src={selectedImage}
+                alt={product.title}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+                priority
+                data-ai-hint={product.hint}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <span className="text-sm text-muted-foreground">Sin imagen</span>
+              </div>
+            )}
+          </div>
         </div>
 
-
-        {/* Product Details */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-medium text-primary">{product.category}</p>
-                <h1 className="text-3xl md:text-4xl font-bold font-headline">{product.title}</h1>
-              </div>
-              {user && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
+        {/* Detalle */}
+        <div className="space-y-7">
+          <div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="eyebrow">{product.category}</span>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="rounded-full" onClick={handleShareProduct} aria-label="Compartir">
+                  <Share2 className="h-5 w-5 text-muted-foreground" />
+                </Button>
+                {isAdmin && (
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" size="icon" className="rounded-full" aria-label="Editar producto">
                         <Edit className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent className="w-full md:w-[500px] overflow-y-auto">
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full overflow-y-auto md:w-[500px]">
                       <SheetHeader>
-                        <SheetTitle>Editar Producto</SheetTitle>
-                        <SheetDescription>
-                          Realiza cambios en los detalles del producto. Haz clic en guardar cuando termines.
-                        </SheetDescription>
+                        <SheetTitle>Editar producto</SheetTitle>
+                        <SheetDescription>Hacé los cambios y guardá cuando termines.</SheetDescription>
                       </SheetHeader>
                       <div className="py-4">
                         <EditProductForm product={product} />
                       </div>
-                  </SheetContent>
-                </Sheet>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={handleShareProduct}>
-                    <Share2 className="h-5 w-5 text-muted-foreground" />
-                </Button>
-            </div>
-          </div>
-          
-          <p className="text-muted-foreground">{product.description}</p>
-          
-           <div className="flex items-baseline gap-4">
-                {product.salePrice ? (
-                    <>
-                        <p className="text-4xl font-bold text-destructive">
-                            {product.salePrice}
-                        </p>
-                        <p className="text-2xl font-medium text-muted-foreground line-through">
-                            {product.price}
-                        </p>
-                    </>
-                ) : (
-                    <p className={cn("text-4xl font-bold", !product.disponible ? 'text-red-600' : 'text-primary')}>
-                        {product.disponible === false ? 'Sin Stock' : product.price}
-                    </p>
+                    </SheetContent>
+                  </Sheet>
                 )}
+              </div>
             </div>
+            <h1 className="mt-3 font-headline text-3xl font-extrabold uppercase leading-[0.95] md:text-5xl">
+              {product.title}
+            </h1>
+          </div>
 
-
-          <div className="space-y-4">
-            {/* Color Options */}
-            {product.options?.colors && product.options.colors.length > 0 && (
-              <div className="space-y-2">
-                <Label>Color</Label>
-                <RadioGroup 
-                    value={selectedColor} 
-                    onValueChange={setSelectedColor}
-                    className="flex items-center gap-2"
-                >
-                    {product.options.colors.map(color => (
-                        <RadioGroupItem 
-                            key={color} 
-                            value={color}
-                            id={`color-${color}`}
-                            className="h-8 w-8 rounded-full border-2 border-transparent"
-                            style={{backgroundColor: color}}
-                            aria-label={`Color ${color}`}
-                        >
-                           <span className={cn(
-                               "h-full w-full rounded-full ring-2 ring-offset-2 ring-transparent",
-                               selectedColor === color && "ring-primary"
-                           )}></span>
-                        </RadioGroupItem>
-                    ))}
-                </RadioGroup>
-              </div>
-            )}
-
-            {/* Size Options */}
-            {product.options?.sizes && product.options.sizes.length > 0 && (
-              <div className="space-y-2 max-w-[200px]">
-                <Label htmlFor="size-select">Talle</Label>
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger id="size-select">
-                    <SelectValue placeholder="Selecciona un talle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.options.sizes.map(size => (
-                      <SelectItem key={size} value={size}>{size}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+          <div className="flex items-baseline gap-3">
+            {outOfStock ? (
+              <p className="font-headline text-3xl font-extrabold text-destructive">Sin stock</p>
+            ) : salePrice > 0 ? (
+              <>
+                <p className="font-headline text-4xl font-extrabold text-primary">{formatPrice(salePrice)}</p>
+                <p className="text-xl text-muted-foreground line-through">{formatPrice(price)}</p>
+              </>
+            ) : (
+              <p className="font-headline text-4xl font-extrabold">{formatPrice(price)}</p>
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <Label>Cantidad</Label>
-            <div className="flex items-center border rounded-md">
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)}>
-                    <Minus className="h-4 w-4" />
+          {product.description && (
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{product.description}</p>
+          )}
+
+          {/* Color */}
+          {product.options?.colors && product.options.colors.length > 0 && (
+            <div className="space-y-2.5">
+              <Label>
+                Color: <span className="font-normal text-muted-foreground">{colorName(selectedColor)}</span>
+              </Label>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {product.options.colors.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setSelectedColor(color)}
+                    className={cn(
+                      'h-9 w-9 rounded-full border ring-offset-2 ring-offset-background transition',
+                      selectedColor === color ? 'ring-2 ring-primary' : 'hover:ring-2 hover:ring-primary/30'
+                    )}
+                    style={{ backgroundColor: color }}
+                    aria-label={`Color ${colorName(color)}`}
+                    aria-pressed={selectedColor === color}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Talle */}
+          {product.options?.sizes && product.options.sizes.length > 0 && (
+            <div className="space-y-2.5">
+              <Label>Talle</Label>
+              <div className="flex flex-wrap gap-2">
+                {product.options.sizes.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setSelectedSize(size)}
+                    className={cn(
+                      'min-w-12 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
+                      selectedSize === size
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'hover:border-primary/40'
+                    )}
+                    aria-pressed={selectedSize === size}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Cantidad + acciones */}
+          <div className="space-y-3 border-t pt-6">
+            <div className="flex items-center gap-4">
+              <Label>Cantidad</Label>
+              <div className="flex items-center rounded-full border">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Restar uno"
+                >
+                  <Minus className="h-4 w-4" />
                 </Button>
                 <Input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-16 text-center border-x border-y-0 focus-visible:ring-0"
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-14 border-0 bg-transparent text-center focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                  aria-label="Cantidad"
                 />
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)}>
-                    <Plus className="h-4 w-4" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => setQuantity((q) => q + 1)}
+                  aria-label="Sumar uno"
+                >
+                  <Plus className="h-4 w-4" />
                 </Button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={product.disponible === false}>
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Agregar al Carrito
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={outOfStock}>
+                <ShoppingCart className="h-5 w-5" />
+                Agregar al carrito
+              </Button>
+              <Button size="lg" variant="outline" className="w-full" asChild>
+                <a href={whatsappHref()} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-5 w-5" />
+                  Consultar por WhatsApp
+                </a>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              ¿Pedido por cantidad para colegios, empresas o eventos? Consultanos y te armamos un precio especial.
+            </p>
           </div>
         </div>
       </div>

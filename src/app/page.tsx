@@ -10,6 +10,16 @@ import Ticker from "@/components/Ticker";
 import NewsCard from "@/components/NewsCard"; // Importar la nueva tarjeta
 import HeroSection from "@/components/HeroSection"; // Importar el nuevo componente
 import NewsletterForm from "@/components/NewsletterForm";
+import {
+  SectionHeading,
+  ServicesSection,
+  CategoryShowcase,
+  OccasionsSection,
+  HowToBuy,
+  ClosingCTA,
+} from "@/components/HomeSections";
+import type { Metadata } from "next";
+import { baseOpenGraph, categorySeo, siteName } from "@/lib/site";
 
 interface HomeProps {
   searchParams?: {
@@ -22,14 +32,30 @@ const PRODUCTS_PER_PAGE = 8;
 
 export const revalidate = 60;
 
+export function generateMetadata({ searchParams }: HomeProps): Metadata {
+  const category = searchParams?.category;
+  const seo = category && category !== "Todos" ? categorySeo[category] : undefined;
+  if (!seo) return { alternates: { canonical: "/" }, openGraph: { ...baseOpenGraph, url: "/" } };
+
+  // Sin canonical ni og:url: Next 14 descarta el query string cuando la ruta es "/" y los
+  // dejaría apuntando a la home. Sin la etiqueta, Google toma la URL de la categoría como propia.
+  return {
+    // "absolute" porque la plantilla "%s | Arte Nativo" no aplica al mismo segmento que el layout.
+    title: { absolute: `${seo.title} | ${siteName}` },
+    description: seo.description,
+    openGraph: { ...baseOpenGraph, title: seo.title, description: seo.description },
+  };
+}
 
 export default async function Home({ searchParams }: HomeProps) {
   const selectedCategory = searchParams?.category ?? "Todos";
   const currentPage = Number(searchParams?.page ?? 1);
 
-  const allProducts: Product[] = await getProducts();
-  const reviews: Review[] = await getReviews();
-  const allNews: News[] = await getNews();
+  const [allProducts, reviews, allNews]: [Product[], Review[], News[]] = await Promise.all([
+    getProducts(),
+    getReviews(),
+    getNews(),
+  ]);
 
   const filteredProductsByCategory =
     selectedCategory === "Todos"
@@ -43,16 +69,20 @@ export default async function Home({ searchParams }: HomeProps) {
   const featuredProducts = allProducts.filter((p) => p.isFeatured);
   
   const tickerMessages1 = [
-    "¡Aprovecha las promos por cantidad en stickers!",
-    "Recibimos todos los medios de pago",
+    "Vos lo imaginás, nosotros lo personalizamos",
+    "Promos por cantidad en stickers",
+    "Todos los medios de pago",
     "12 años de experiencia"
   ];
-  
+
   const tickerMessages2 = [
-    "La mejor calidad en algodón",
-    "Planes especiales para colegios e instituciones",
-    "Todo tipo de estampas y stickers personalizados"
+    "Estampado textil",
+    "Sublimación",
+    "Grabado láser",
+    "Planes para colegios e instituciones"
   ];
+
+  const isHome = selectedCategory === 'Todos' && currentPage === 1;
 
 
   const createPageURL = (pageNumber: number | string) => {
@@ -62,48 +92,55 @@ export default async function Home({ searchParams }: HomeProps) {
   };
 
   return (
-    <div className="space-y-12">
-      {selectedCategory === 'Todos' && currentPage === 1 && (
-        <HeroSection />
+    <div className="space-y-16 md:space-y-24">
+      {isHome && (
+        <div className="space-y-6">
+          <HeroSection />
+          <Ticker messages={tickerMessages1} direccion="izq" />
+        </div>
       )}
 
-      <Ticker messages={tickerMessages1} direccion="izq" />
-      
-      {selectedCategory === 'Todos' && featuredProducts.length > 0 && currentPage === 1 && (
+      {isHome && <CategoryShowcase products={allProducts} />}
+
+      {isHome && featuredProducts.length > 0 && (
         <section>
-          <h2 className="text-3xl font-bold font-headline mb-6 text-center text-primary">
-            Productos Destacados
-          </h2>
-          <div className="overflow-hidden">
+          <SectionHeading
+            eyebrow="Lo más pedido"
+            title="Productos destacados."
+          />
+          <div className="overflow-hidden -mx-2 pb-8">
             <ProductCarousel products={featuredProducts} />
           </div>
         </section>
       )}
 
-      <Ticker messages={tickerMessages2} direccion="der" />
+      {isHome && <ServicesSection />}
 
-      <section id="all-products">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
-          <h2 className="text-3xl font-bold font-headline text-primary">
-            {selectedCategory === 'Todos' ? 'Todos los Productos' : selectedCategory}
-          </h2>
-        </div>
+      {isHome && <Ticker messages={tickerMessages2} direccion="der" />}
+
+      <section id="all-products" className="scroll-mt-24">
+        <SectionHeading
+          eyebrow={selectedCategory === 'Todos' ? 'Catálogo' : 'Categoría'}
+          title={selectedCategory === 'Todos' ? 'Todos los productos.' : `${selectedCategory}.`}
+          subtitle={`${filteredProductsByCategory.length} productos para personalizar`}
+          as={isHome ? "h2" : "h1"}
+        />
 
         {productsForCurrentPage.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {productsForCurrentPage.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-card rounded-lg border border-dashed">
+          <div className="text-center py-20 bg-muted rounded-2xl border border-dashed">
             <p className="text-xl text-muted-foreground">No hay productos en esta categoría.</p>
           </div>
         )}
       </section>
 
       {totalPages > 1 && (
-        <section className="pt-8">
+        <section className="!mt-10">
           <Pagination>
             <PaginationContent>
               {currentPage > 1 && (
@@ -132,34 +169,38 @@ export default async function Home({ searchParams }: HomeProps) {
 
       {selectedCategory === 'Todos' && (
         <>
-          <section className="py-12 border-t space-y-12">
+          <OccasionsSection />
+
+          <HowToBuy />
+
+          <section className="space-y-12">
             <div>
-              <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-                Lo que dicen nuestros clientes
-              </h2>
+              <SectionHeading
+                eyebrow="Testimonios"
+                title="Lo que dicen nuestros clientes."
+              />
               {reviews.length > 0 ? (
                 <TestimonialCarousel testimonials={reviews} />
               ) : (
-                <p className="text-center text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
+                <p className="text-muted-foreground">Todavía no hay reseñas. ¡Sé el primero!</p>
               )}
             </div>
 
             <CustomerReviews />
-
-            {/* Nueva sección de Novedades */}
-            {allNews.length > 0 && (
-              <div>
-                <h2 className="text-3xl font-bold font-headline mb-8 text-center text-primary">
-                  Novedades
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {allNews.map((newsItem) => (
-                    <NewsCard key={newsItem.id} news={newsItem} />
-                  ))}
-                </div>
-              </div>
-            )}
           </section>
+
+          {allNews.length > 0 && (
+            <section>
+              <SectionHeading eyebrow="Novedades" title="Trabajos y novedades." />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {allNews.map((newsItem) => (
+                  <NewsCard key={newsItem.id} news={newsItem} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <ClosingCTA />
 
           <NewsletterForm />
         </>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import Image from "next/image";
+import { ImageWithSkeleton } from "@/components/ui/image-with-skeleton";
 import Link from "next/link";
 import { Heart, Trash2, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -73,15 +73,16 @@ export default function ProductCard({ product }: ProductCardProps) {
     
 
     return (
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col group w-full">
-            <CardHeader className="p-0 relative aspect-square">
+        <Card className="overflow-hidden border-0 bg-transparent shadow-none flex flex-col group w-full">
+            <CardHeader className="p-0 relative aspect-square overflow-hidden rounded-2xl bg-muted space-y-0">
                  <Link href={`/products/${product.id}`} className="absolute inset-0 z-0">
                     {imageUrl ? (
-                        <Image
+                        <ImageWithSkeleton
                             src={imageUrl}
                             alt={product.title}
                             fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, 50vw"
+                            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                             data-ai-hint={product.hint}
                         />
                     ) : (
@@ -90,8 +91,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </div>
                     )}
                  </Link>
-                
-                <div className="absolute top-2 right-2 z-10 flex flex-col gap-2">
+
+                <span className="pointer-events-none absolute inset-x-3 bottom-3 z-10 hidden translate-y-2 items-center justify-center rounded-full bg-background/95 py-2 text-xs font-semibold text-foreground opacity-0 shadow-md backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:flex">
+                    Ver producto →
+                </span>
+
+                <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
                     {authLoading ? (
                         <Skeleton className="h-8 w-8 rounded-full" />
                     ) : (
@@ -178,38 +183,34 @@ export default function ProductCard({ product }: ProductCardProps) {
                     )}
                 </div>
                  {product.salePrice && (
-                    <Badge variant="destructive" className="absolute top-2 left-2 z-10">OFERTA</Badge>
+                    <Badge className="absolute top-3 left-3 z-10 rounded-full bg-primary px-2.5 uppercase tracking-wider hover:bg-primary">Oferta</Badge>
                 )}
                  {!product.disponible && (
-                     <Badge variant="destructive" className="absolute bottom-2 left-2 z-10">Sin Stock</Badge>
+                     <Badge variant="secondary" className="absolute top-3 left-3 z-10 rounded-full px-2.5 uppercase tracking-wider" style={product.salePrice ? { top: '2.5rem' } : undefined}>Sin stock</Badge>
                 )}
             </CardHeader>
              <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
-                <CardContent className="p-4 flex flex-col flex-grow">
-                     <div className="flex flex-col flex-grow justify-start min-h-[80px]">
-                        <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                             <CardTitle className="text-base font-medium leading-tight group-hover:text-primary transition-colors flex-grow">
-                                {product.title}
-                            </CardTitle>
-                            <div className="flex flex-row sm:flex-col items-baseline sm:items-end gap-2 sm:gap-0 flex-shrink-0">
-                                {product.salePrice ? (
-                                    <>
-                                        <p className="text-lg font-bold text-destructive">
-                                            {product.salePrice}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground line-through">
-                                            {product.price}
-                                        </p>
-                                    </>
-                                ) : (
-                                    <p className="text-lg font-bold text-primary">
-                                        {product.price}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        <CardDescription className="text-xs text-muted-foreground mt-1">{product.category}</CardDescription>
-                      </div>
+                <CardContent className="px-1 pt-3 pb-0 flex flex-col flex-grow">
+                    <CardDescription className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary">{product.category}</CardDescription>
+                    <CardTitle className="mt-1 font-body text-sm md:text-base font-semibold leading-snug tracking-normal line-clamp-2 group-hover:text-primary transition-colors">
+                        {product.title}
+                    </CardTitle>
+                    <div className="mt-2 flex items-baseline gap-2">
+                        {product.salePrice ? (
+                            <>
+                                <p className="text-base md:text-lg font-bold text-foreground">
+                                    {product.salePrice}
+                                </p>
+                                <p className="text-sm text-muted-foreground line-through">
+                                    {product.price}
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-base md:text-lg font-bold text-foreground">
+                                {product.price}
+                            </p>
+                        )}
+                    </div>
                 </CardContent>
             </Link>
         </Card>

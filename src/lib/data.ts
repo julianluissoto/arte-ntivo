@@ -24,9 +24,11 @@ export async function getProducts(): Promise<Product[]> {
       return [];
     }
 
+    // El id del documento va al final: algunos productos guardan un campo
+    // "id" numérico dentro de los datos que, si no, pisaría el id real (string).
     const firestoreProducts = snapshot.docs.map((doc) => ({
-      id: doc.id,
       ...doc.data(),
+      id: doc.id,
     } as Product));
 
     return firestoreProducts;
@@ -44,7 +46,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() } as Product;
+      return { ...docSnap.data(), id: docSnap.id } as Product;
     }
     
     console.log(`No se encontró ningún producto con el id: ${id}`);
@@ -62,7 +64,9 @@ export async function updateProduct(id: string, data: Partial<Omit<Product, 'id'
     await updateDoc(docRef, data);
   } catch(error) {
     console.error("❌ Error al actualizar el producto:", error);
-    throw new Error("No se pudo actualizar el producto");
+    // Re-lanzamos el error original para que la UI pueda mostrar el código real
+    // (p. ej. "permission-denied" si las reglas de Firestore bloquean la escritura).
+    throw error;
   }
 }
 
@@ -205,7 +209,9 @@ export async function saveUserCart(userId: string, cartItems: CartItem[]) {
     const cartRef = doc(db, 'carts', userId);
     // Use setDoc to create or overwrite the document with the specific ID.
     // { merge: true } is crucial to prevent overwriting existing data if we only want to update.
-    await setDoc(cartRef, { items: cartItems, updatedAt: serverTimestamp() }, { merge: true });
+    // JSON round-trip: Firestore rechaza campos con valor undefined.
+    const items = JSON.parse(JSON.stringify(cartItems));
+    await setDoc(cartRef, { items, updatedAt: serverTimestamp() }, { merge: true });
   } catch (error) {
     console.error('❌ Error saving user cart to Firestore:', error);
   }

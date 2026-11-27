@@ -17,13 +17,10 @@ export default function TestimonialCard({ review }: TestimonialCardProps) {
 
   return (
     <div
-      className="bg-secondary p-4 rounded-lg shadow-md border border-border flex flex-col items-center text-center h-full mx-2
-                 [box-shadow:5px_5px_0px_0px_var(--primary)] // Constant shadow for initial lift
-                 transform translate-x-[-3px] translate-y-[-3px] // Constant slight upward and left shift
-                "
+      className="bg-card p-6 rounded-2xl border flex flex-col items-center text-center h-full mx-2 shadow-sm"
     >
       {/* Avatar */}
-      <Avatar className="w-16 h-16 mb-3 border-2 border-primary">
+      <Avatar className="w-16 h-16 mb-3 ring-2 ring-primary ring-offset-2 ring-offset-card">
         <AvatarImage src={review.userImage ?? ''} alt={review.userName} />
         <AvatarFallback className="text-xl">
           {getInitials(review.userName)}
@@ -42,7 +39,7 @@ export default function TestimonialCard({ review }: TestimonialCardProps) {
             <Star
               key={i}
               className={`w-4 h-4 ${
-                i < review.rating! ? "text-yellow-500 fill-yellow-500" : "text-gray-400"
+                i < review.rating! ? "text-primary fill-primary" : "text-muted-foreground/40"
               }`}
             />
           ))}

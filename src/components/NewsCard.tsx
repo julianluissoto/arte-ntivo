@@ -1,8 +1,7 @@
 // src/components/NewsCard.tsx
 "use client";
 
-import Image from "next/image";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageWithSkeleton } from "@/components/ui/image-with-skeleton";
 import type { News } from "@/lib/types";
 
 interface NewsCardProps {
@@ -13,32 +12,27 @@ export default function NewsCard({ news }: NewsCardProps) {
     const imageUrl = news.image;
 
     return (
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col group w-full">
-            <div className="flex flex-col flex-grow">
-                 <div className="relative aspect-video">
-                    {imageUrl ? (
-                        <Image
-                            src={imageUrl}
-                            alt={news.title}
-                            fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            data-ai-hint={news.hint}
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <span className="text-sm text-muted-foreground">No Image</span>
-                        </div>
-                    )}
-                </div>
-                <CardHeader className="p-4">
-                    <CardTitle className="text-xl font-bold font-headline">{news.title}</CardTitle>
-                </CardHeader>
-                <CardFooter className="p-4  flex-grow bg-secondary">
-                    <CardDescription className="text-sm  text-white">
-                        {news.description}
-                    </CardDescription>
-                </CardFooter>
+        <article className="group flex w-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <div className="relative aspect-video overflow-hidden bg-muted">
+                {imageUrl ? (
+                    <ImageWithSkeleton
+                        src={imageUrl}
+                        alt={news.title}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        data-ai-hint={news.hint}
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                        <span className="text-sm text-muted-foreground">Sin imagen</span>
+                    </div>
+                )}
             </div>
-        </Card>
+            <div className="flex flex-grow flex-col p-5">
+                <h3 className="text-xl font-bold leading-tight">{news.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{news.description}</p>
+            </div>
+        </article>
     );
 }

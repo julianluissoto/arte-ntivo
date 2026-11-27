@@ -9,16 +9,48 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
-import CategorySidebar, { CategorySidebarSkeleton } from '@/components/CategorySidebar';
 import { AuthProvider } from '@/hooks/useAuth';
 import { FavoritesProvider } from '@/hooks/useFavorites';
 import { CartProvider } from '@/hooks/useCart';
-import { Suspense } from 'react';
 import ChatPopup from '@/components/ChatPopup';
+import { phoneNumber } from '@/components/WhatsAppButton';
+import { baseOpenGraph, defaultOgImage, siteDescription, siteKeywords, siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Arte Nativo Estampados',
-  description: 'Personalized products crafted with care.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `${siteName} | Productos personalizados`,
+    template: `%s | ${siteName}`,
+  },
+  description: siteDescription,
+  keywords: siteKeywords,
+  applicationName: siteName,
+  // Sin canonical global: cada página define el suyo (si no, se heredaría "/" en todas).
+  openGraph: {
+    ...baseOpenGraph,
+    title: `${siteName} | Productos personalizados`,
+    description: siteDescription,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${siteName} | Productos personalizados`,
+    description: siteDescription,
+    images: [defaultOgImage],
+  },
+  robots: { index: true, follow: true },
+};
+
+// Datos estructurados de la empresa para Google.
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  name: siteName,
+  url: siteUrl,
+  logo: `${siteUrl}/assets/logo.png`,
+  image: defaultOgImage,
+  description: siteDescription,
+  telephone: `+${phoneNumber}`, // phoneNumber ya viene solo con dígitos
+  areaServed: 'AR',
 };
 
 export default function RootLayout({
@@ -27,29 +59,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="es-AR" className="scroll-smooth">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-muted">
+      <body className="font-body antialiased bg-background">
         <AuthProvider>
           <FavoritesProvider>
             <CartProvider>
-              <div className="max-w-screen-2xl mx-auto border-x shadow-2xl">
-                <div className="flex min-h-screen bg-background">
-                  <Suspense fallback={<CategorySidebarSkeleton />}>
-                    <CategorySidebar />
-                  </Suspense>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <Header />
-                    <main className="flex-grow p-4 md:p-8">
-                      {children}
-                    </main>
-                    <Footer />
+              <div className="flex min-h-screen flex-col bg-background">
+                <Header />
+                <main className="flex-grow px-4 py-6 md:px-10 md:py-10">
+                  <div className="mx-auto w-full max-w-7xl">
+                    {children}
                   </div>
-                </div>
+                </main>
+                <Footer />
               </div>
 
               {/* Floating Action Buttons Container */}

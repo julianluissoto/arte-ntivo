@@ -18,6 +18,7 @@ export const Logo = ({ className, width = 150, height = 80 }: LogoProps) => {
         alt="Arte Nativo Logo"
         width={width}
         height={height}
+        className="h-full w-auto"
         priority
       />
     </div>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShieldAlert, Send, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { AdminAccessDenied, AdminHeader } from '@/components/AdminHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Subscriber, News } from '@/lib/types';
 import { getSubscribers, getNews } from '@/lib/data';
@@ -111,25 +112,13 @@ export default function AdminNewsletterPage() {
     }
 
     if (!user || !isAdmin) {
-        return (
-            <div className="text-center py-20 bg-card rounded-lg border border-dashed">
-                <ShieldAlert className="h-16 w-16 text-destructive mx-auto mb-4" />
-                <h2 className="text-2xl font-bold font-headline text-destructive">Acceso Denegado</h2>
-                <p className="text-muted-foreground mt-2 mb-6">No tienes permiso para ver esta página.</p>
-            </div>
-        );
+        return <AdminAccessDenied />;
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            <div className="text-center">
-                <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
-                    Panel de Newsletter
-                </h1>
-                <p className="mt-4 text-lg text-foreground/80">
-                    Gestiona tus suscriptores y envía las últimas novedades.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <AdminHeader title="Newsletter." subtitle="Gestioná suscriptores y enviá las últimas novedades." />
+            <div className="max-w-4xl space-y-8">
 
             <Card>
                 <CardHeader>
@@ -203,6 +192,7 @@ export default function AdminNewsletterPage() {
                     )}
                 </CardContent>
             </Card>
+            </div>
         </div>
     );
 }

@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 // Export these to be used in other components
-export const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPPNUMBER || "1234567890"; // Replaced with your number
+// wa.me solo acepta dígitos: sacamos "+", espacios y guiones.
+export const phoneNumber = (process.env.NEXT_PUBLIC_WHATSAPPNUMBER || "1234567890").replace(/\D/g, "");
 export const defaultMessage = "Hola! Quisiera más información sobre sus productos personalizados.";
 
 const WhatsAppIcon = () => (

@@ -31,6 +31,10 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+  /** Identifica la línea: producto + color + talle (ver cartLineKey). */
+  lineKey: string;
+  selectedColor?: string;
+  selectedSize?: string;
 }
 
 export interface Review {

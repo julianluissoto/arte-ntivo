@@ -1,35 +1,40 @@
 // src/components/Ticker.tsx
-import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TickerProps {
   messages: string[];
-  direccion?: "der" | "izq"; // Keep your original prop names
+  direccion?: "der" | "izq";
 }
 
-const TickerContent = ({ messages }: TickerProps) => (
-  <div className="flex items-center">
+const TickerContent = ({ messages }: { messages: string[] }) => (
+  <div className="flex items-center" aria-hidden>
     {messages.map((msg, index) => (
       <div key={index} className="flex items-center">
-        <span className="mx-4 text-base font-semibold">{msg}</span>
-        {index < messages.length - 1 && (
-          <Star className="h-5 w-5 mx-4 text-primary fill-secondary flex-shrink-0" />
-        )}
+        <span className="mx-5 font-headline text-sm font-bold uppercase tracking-wider md:text-base">
+          {msg}
+        </span>
+        <span className="text-xs opacity-70">●</span>
       </div>
     ))}
   </div>
 );
 
-export default function Ticker({ messages,direccion}: TickerProps) {
-  const fullMessages = [...messages, ...messages, ...messages, ...messages]; // Repeat messages to ensure continuous scrolling
-
-  // Determine animation class based on 'direccion' prop
+export default function Ticker({ messages, direccion }: TickerProps) {
+  const fullMessages = [...messages, ...messages, ...messages, ...messages];
   const animationClass =
     direccion === "izq" ? "animate-marquee-forward" : "animate-marquee-backward";
 
   return (
-    
-   <div className={`${direccion === 'izq' ? 'bg-primary' : 'bg-secondary'} text-black relative flex w-full overflow-hidden py-2 shadow-md`}>
-      <div className={`flex whitespace-nowrap items-center ${animationClass}`}>
+    <div
+      className={cn(
+        "relative flex w-full overflow-hidden rounded-full py-3",
+        direccion === "izq"
+          ? "bg-primary text-primary-foreground"
+          : "bg-secondary text-secondary-foreground"
+      )}
+    >
+      <span className="sr-only">{messages.join(" · ")}</span>
+      <div className={cn("flex whitespace-nowrap items-center", animationClass)}>
         <TickerContent messages={fullMessages} />
         <TickerContent messages={fullMessages} />
       </div>

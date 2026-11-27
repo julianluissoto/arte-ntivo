@@ -11,20 +11,24 @@ export default function Footer() {
   const { handleShare } = useShare(); // Usar el hook
 
   return (
-    <footer className="bg-secondary text-secondary-foreground mt-auto">
-      <div className="container mx-auto py-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          
+    <footer className="relative mt-auto overflow-hidden bg-secondary text-secondary-foreground md:rounded-tl-[2rem]">
+      <div className="absolute inset-0 bg-grain opacity-25" aria-hidden />
+      <div className="relative mx-auto max-w-7xl py-14 px-6 md:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+
           {/* Columna Logo */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
               <Logo2 className="h-auto w-46" />
             </Link>
+            <p className="text-sm text-white/70 max-w-xs">
+              Productos personalizados con estampado, sublimación y grabado láser. Envíos a todo el país.
+            </p>
           </div>
 
           {/* Columna Navegación */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4 text-white">Navegación</h3>
+            <h3 className="font-headline font-bold text-sm uppercase tracking-[0.2em] mb-4 text-primary">Navegación</h3>
              <div className="grid grid-cols-2 gap-2 text-sm text-white/80 md:grid-cols-1 md:space-y-2">
               <Link href="/" className="hover:text-primary">Home</Link>
               <Link href="/signup" className="hover:text-primary">Registrate</Link>
@@ -35,7 +39,7 @@ export default function Footer() {
 
           {/* Columna Medios de Pago */}
            <div className="flex flex-col text-center md:text-left">
-              <h3 className="font-bold text-lg mb-4 text-white">Medios de Pago</h3>
+              <h3 className="font-headline font-bold text-sm uppercase tracking-[0.2em] mb-4 text-primary">Medios de Pago</h3>
               <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col items-center md:items-start text-white/80">
                       <Banknote className="h-8 w-8 mb-1"/>
@@ -58,7 +62,7 @@ export default function Footer() {
 
           {/* Columna Seguinos */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4 text-white">Seguinos</h3>
+            <h3 className="font-headline font-bold text-sm uppercase tracking-[0.2em] mb-4 text-primary">Seguinos</h3>
             <div className="flex justify-center md:justify-start gap-4">
               <Link href="#" aria-label="Facebook" className="text-white/80 hover:text-primary">
                 <Facebook className="h-6 w-6" />

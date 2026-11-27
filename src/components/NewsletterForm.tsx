@@ -52,16 +52,18 @@ export default function NewsletterForm() {
   };
 
   return (
-    <section className="bg-card py-12">
-      <div className="container mx-auto text-center max-w-2xl">
-        <Mail className="mx-auto h-12 w-12 text-primary" />
-        <h2 className="text-3xl font-bold font-headline mt-4">
-          Suscríbete a nuestras Novedades
+    <section className="rounded-[2rem] border bg-card px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <Mail className="h-7 w-7" />
+        </span>
+        <h2 className="mt-5 font-headline text-3xl font-extrabold uppercase leading-none md:text-4xl">
+          Sumate a la comunidad
         </h2>
-        <p className="text-muted-foreground mt-2 mb-6">
-          Recibe ofertas exclusivas y sé el primero en conocer nuestros nuevos productos.
+        <p className="text-muted-foreground mt-3 mb-8">
+          Recibí ofertas exclusivas y enterate primero de nuestros nuevos productos.
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto sm:rounded-full sm:border sm:bg-background sm:p-1.5">
           <Input
             type="email"
             placeholder="Tu correo electrónico"
@@ -69,9 +71,9 @@ export default function NewsletterForm() {
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
             required
-            className="text-base"
+            className="h-11 rounded-full text-base sm:border-0 sm:bg-transparent sm:focus-visible:ring-0 sm:focus-visible:ring-offset-0"
           />
-          <Button type="submit" disabled={isLoading} className="sm:w-auto">
+          <Button type="submit" disabled={isLoading} className="h-11 sm:w-auto">
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}

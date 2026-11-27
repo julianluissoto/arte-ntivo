@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Literata', 'serif'],
-        headline: ['Literata', 'serif'],
+        body: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        headline: ['"Bricolage Grotesque"', '"Plus Jakarta Sans"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

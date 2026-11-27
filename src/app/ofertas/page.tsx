@@ -1,41 +1,72 @@
-
 // src/app/ofertas/page.tsx
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Flame } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { SectionHeading, ClosingCTA } from "@/components/HomeSections";
+import { EmptyState, productGridClass } from "@/components/PageStates";
+import { Button } from "@/components/ui/button";
 import { getProducts } from "@/lib/data";
 import type { Product } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
+import { baseOpenGraph } from "@/lib/site";
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Ofertas en productos personalizados",
+  description:
+    "Descuentos en remeras, tazas, mates, llaveros y más productos personalizados. Aprovechá las ofertas de Arte Nativo Estampados.",
+  alternates: { canonical: "/ofertas" },
+  openGraph: {
+    ...baseOpenGraph,
+    url: "/ofertas",
+    title: "Ofertas en productos personalizados | Arte Nativo Estampados",
+    description: "Descuentos en remeras, tazas, mates, llaveros y más productos personalizados.",
+  },
+};
 
 export default async function OfertasPage() {
   const allProducts: Product[] = await getProducts();
-  const offerProducts = allProducts.filter(p => p.salePrice && p.disponible);
+  const offerProducts = allProducts.filter((p) => p.salePrice && p.disponible);
 
   return (
-    <div className="space-y-12">
-      <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
-          🔥 Ofertas Imperdibles 🔥
-        </h1>
-        <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
-          ¡Aprovecha nuestros descuentos especiales! Encuentra productos increíbles a precios que no podrás resistir.
-        </p>
-      </section>
-
+    <div className="space-y-16 md:space-y-24">
       <section>
+        <SectionHeading
+          as="h1"
+          eyebrow="Ofertas"
+          title="Precios que no se repiten."
+          subtitle={
+            offerProducts.length > 0
+              ? `${offerProducts.length} ${offerProducts.length === 1 ? "producto" : "productos"} con descuento por tiempo limitado.`
+              : "Descuentos especiales por tiempo limitado."
+          }
+        />
+
         {offerProducts.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className={productGridClass}>
             {offerProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-card rounded-lg border border-dashed">
-            <p className="text-xl text-muted-foreground">¡Vaya! Parece que no hay ofertas en este momento.</p>
-            <p className="text-muted-foreground mt-2">Vuelve a visitarnos pronto para encontrar grandes descuentos.</p>
-          </div>
+          <EmptyState
+            icon={Flame}
+            title="No hay ofertas por ahora"
+            text="Volvé pronto: cada tanto sumamos descuentos especiales. Mientras, mirá todo el catálogo."
+            action={
+              <Button asChild size="lg" className="group">
+                <Link href="/#all-products">
+                  Ver catálogo
+                  <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            }
+          />
         )}
       </section>
+
+      <ClosingCTA />
     </div>
   );
 }

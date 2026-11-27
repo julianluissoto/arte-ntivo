@@ -3,6 +3,7 @@
 
 import { useState, useRef, ChangeEvent, DragEvent, useEffect } from 'react';
 import Image from 'next/image';
+import { ImageWithSkeleton } from '@/components/ui/image-with-skeleton';
 import { getProducts } from '@/lib/data';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -232,7 +233,7 @@ export default function CrearPage() {
               {loading ? (
                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
               ) : selectedProduct ? (
-                <Image
+                <ImageWithSkeleton
                   src={selectedProduct.images[0]}
                   alt={selectedProduct.title}
                   fill
